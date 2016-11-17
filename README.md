@@ -12,14 +12,14 @@ my collection of nmap nse modules
     update nse database: --script-updatedb
 
 
-# [spoof-mac] help argument
-![spoof-mac](https://dl.dropboxusercontent.com/u/21426454/spoo-mac-banner2.png)
+# [file-checker.nse] help argument
+![file-checker.nse](https://dl.dropboxusercontent.com/u/21426454/nse1.png)
 
-# [spoof-mac] list of know vendors
-![spoof-mac](https://dl.dropboxusercontent.com/u/21426454/spoo-mac-banner3.png)
+# [file-checker.nse] script-args read=true
+![file-checker.nse](https://dl.dropboxusercontent.com/u/21426454/nse2.png)
 
-# [spoof-mac] working
-![spoof-mac](https://dl.dropboxusercontent.com/u/21426454/spoo-mac-banner.png)
+# [file-checker.nse] script-args index=/etc/passwd,read=true
+![file-checker.nse](https://dl.dropboxusercontent.com/u/21426454/nse3.png)
 
 
 # Please read my 'WIKI' for further information.
