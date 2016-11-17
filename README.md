@@ -18,7 +18,7 @@ my collection of nmap nse modules
 # [file-checker.nse] script-args read=true
 ![file-checker.nse](https://dl.dropboxusercontent.com/u/21426454/nse2.png)
 
-# [file-checker.nse] script-args index=/etc/passwd,read=true
+# [nse] script-args index=/etc/passwd,read=true
 ![file-checker.nse](https://dl.dropboxusercontent.com/u/21426454/nse3.png)
 
 
