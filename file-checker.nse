@@ -28,8 +28,7 @@ nmap -sV -Pn -p 80 --script file-checker.nse script-args "command=/bin/sh -i" <t
 
 Some Syntax examples:
 nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
-nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args read=true <target or domain>
-nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args index=/etc/passwd <target or domain>
+nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/etc/passwd" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
@@ -43,8 +42,7 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- @usage
 -- nmap --script-help file-checker.nse
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
--- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args read=true <target or domain>
--- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args index=/etc/passwd <target or domain>
+-- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/etc/passwd" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
