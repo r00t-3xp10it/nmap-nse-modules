@@ -21,5 +21,8 @@ my collection of nmap nse modules
 # [nse] --script-args index=/etc/passwd,read=true
 ![file-checker.nse](http://3.1m.yt/7LjWoFj.png)
 
+# [nse] --script-args command=msfconsole -q -x 'use auxiliary/scanner/http/dir_scanner; set RHOSTS www.youtube.com; exploit'
+![file-checker.nse](http://3.1m.yt/luV6hP.png)
+
 
 # Please read my 'WIKI' for further information.
