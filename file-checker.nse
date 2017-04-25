@@ -1,5 +1,5 @@
 ---
--- Nmap NSE file-checker.nse - Version 1.5
+-- Nmap NSE file-checker.nse - Version 1.6
 -- Copy script to: /usr/share/nmap/scripts/file-checker.nse
 -- Update db: sudo nmap --script-updatedb
 -- executing: nmap --script-help file-checker.nse
@@ -16,18 +16,25 @@ then file-checker.nse script will read/display the contents of the 'index' file.
 
 This script also gives you the ability to search for a diferent 'index' (files or directory)
 using --script-args index=/file-to-search or index=/directory-to-search, or set a diferent
-User-agent to send in the ofending tcp packet --script-args agent=User-agent.
+User-agent to send in the ofending tcp packet --script-args agent=<User-agent>
 'Default behavior its to search for robots.txt file in webserver'
+
+This script also gives to is users the ability to use the lost '--interactive' nmap
+switch, that allow us to interact with the bash shell inside of nmap funtions using:
+nmap -sV -Pn -p 80 --script file-checker.nse script-args "command=/bin/sh -i" <target>
+'WARNING: The 'command' argument does not work together with other script arguments'
+
 
 
 Some Syntax examples:
 nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args read=true <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args index=/etc/passwd <target or domain>
+nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/index.html,read=true" --spoof-mac Apple <target or domain>
-nmap -sV -Pn -T4 -iR 400 -p 80 --open --reason --script file-checker.nse --script-args "index=/etc/passwd,read=true" -oN credentials.log
+nmap -sV -Pn -T4 -iR 400 -p 80 --open --reason --script file-checker.nse --script-args "index=/etc/passwd,read=true" -oN creds.log
 nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index=/robots.txt,read=true" <zombie>,<target or domain>
 
 ]]
@@ -38,10 +45,11 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args read=true <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args index=/etc/passwd <target or domain>
+-- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/index.html,read=true" --spoof-mac Apple <target or domain>
--- nmap -sV -Pn -T4 -iR 400 -p 80 --open --reason --script file-checker.nse --script-args "index=/etc/passwd,read=true" -oN credentials.log
+-- nmap -sV -Pn -T4 -iR 400 -p 80 --open --reason --script file-checker.nse --script-args "index=/etc/passwd,read=true" -oN creds.log
 -- nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index=/robots.txt,read=true" <zombie>,<target or domain>
 -- @output
 -- PORT   STATE SERVICE
@@ -56,6 +64,7 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- | # This file should be placed into your website webroot directory.
 -- |
 -- | User-agent: *
+-- | Disallow: /SSA/
 -- | Disallow: /porn/
 -- | Disallow: /login/
 -- | Disallow: /cache/
@@ -67,6 +76,7 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- @args search.index   -> The file/path name to search -> Default: /robots.txt
 -- @args fakeUser.agent -> The User-agent to send in header request -> Default: iPhone,safari
 -- @args contents.read  -> Read contents of the 'index' file selected ? -> Default: false
+-- @args local.command  -> intercative bash shell -> Default: false
 ---
 
 author = "r00t-3xp10it"
@@ -78,6 +88,7 @@ categories = {"discovery", "safe"}
 local shortport = require "shortport"
 local stdnse = require ('stdnse')
 local http = require "http"
+local os = require "os"
 
 
   -- THE RULE SECTION --
@@ -85,46 +96,55 @@ local http = require "http"
   portrule = shortport.port_or_service({80, 443}, "http, https", "tcp", "open")
   -- Seach for string stored in variable @args or use the default ones...
   local index = stdnse.get_script_args(SCRIPT_NAME..".index") or "/robots.txt"
+  local command = stdnse.get_script_args(SCRIPT_NAME..".command") or "false"
   local read = stdnse.get_script_args(SCRIPT_NAME..".read") or "false"
 
 
--- THE ACTION SECTION --
-action = function(host, port)
--- Manipulate TCP packet 'header' with false information about attacker :D
-local options = {header={}}   --> manipulate 'header' request ..
-options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_4 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B350 Safari/8536.25" --> use iPhone,safari User-agent OR your own...
-options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv" --> use en-GB as attacker default install language
-options['header']['Cache-Control'] = "no-store" -->  Instruct webserver to not write it to disk (do not to cache it)
--- read response from target (http.get)
-local response = http.get(host, port, index, options)
+    -- THE ACTION SECTION --
+    if (command == "false") then
+      action = function(host, port)
 
+      -- Manipulate TCP packet 'header' with false information about attacker :D
+      local options = {header={}}   --> manipulate 'header' request ..
+      options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_4 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B350 Safari/8536.25" --> use iPhone,safari User-agent OR your own...
+      options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv" --> use en-GB as attacker default install language
+      options['header']['Cache-Control'] = "no-store" -->  Instruct webserver to not write it to disk (do not cache it)
+      -- read response from target (http.get)
+      local response = http.get(host, port, index, options)
 
--- Check if 'index' exist on target webserver
-if (response.status == 200 ) then
+        -- Check if 'index' exist on target webserver
+        if (response.status == 200 ) then
+          if (read == "true") then
+            -- Display return code and index body ...
+            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n\nCONTENTS:\n"..response.body.."\n"
+          else
+            -- Display only return code (default behavior)...
+            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n"
+          end
 
-  if (read == "true") then
-    -- Display return code and index body ...
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n\nCONTENTS:\n"..response.body.."\n"
-  else
-    -- Display only return code (default behavior)...
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n\n"
-  end
+        -- More Error codes displays (NOT FOUND)...
+        elseif (response.status == 400 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." BAD REQUEST\n    module author: r00t-3xp10it\n"
+        elseif (response.status == 302 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." REDIRECTED\n    module author: r00t-3xp10it\n"
+        elseif (response.status == 401 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAUTHORIZED\n    module author: r00t-3xp10it\n"
+        elseif (response.status == 404 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." NOT FOUND\n    module author: r00t-3xp10it\n"
+        elseif (response.status == 403 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." FORBIDDEN\n    module author: r00t-3xp10it\n"
+        elseif (response.status == 503 ) then
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAVAILABLE\n    module author: r00t-3xp10it\n"
+        else
+          -- undefined error code (NOT FOUND)...
+          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNDEFINED ERROR\n    module author: r00t-3xp10it\n"
+        end
+      end
 
-  -- More Error codes displays (NOT FOUND)...
-  elseif (response.status == 400 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." BAD REQUEST\n    module author: r00t-3xp10it\n\n"
-  elseif (response.status == 302 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." REDIRECTED\n    module author: r00t-3xp10it\n\n"
-  elseif (response.status == 401 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAUTHORIZED\n    module author: r00t-3xp10it\n\n"
-  elseif (response.status == 404 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." NOT FOUND\n    module author: r00t-3xp10it\n\n"
-  elseif (response.status == 403 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." FORBIDDEN\n    module author: r00t-3xp10it\n\n"
-  elseif (response.status == 503 ) then
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAVAILABLE\n    module author: r00t-3xp10it\n\n"
-  else
-    -- undefined error code (NOT FOUND)...
-    return "\n  index: "..index.."\n  STATUS: "..response.status.." UNDEFINED ERROR\n    module author: r00t-3xp10it\n\n"
-  end
+    else
+      action = function(host, port)
+      -- execute system command (args)
+      os.execute(""..command.."")
+      return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n"
+    end
 end
