@@ -13,7 +13,7 @@ my collection of nmap nse modules
 
 
 # [file-checker.nse] help argument
-![file-checker.nse](http://2.1m.yt/x55zw62.png)
+![file-checker.nse](http://2.1m.yt/9LeMt0a.png)
 
 # [file-checker.nse] --script-args read=true
 ![file-checker.nse](http://3.1m.yt/VripF6i.png)

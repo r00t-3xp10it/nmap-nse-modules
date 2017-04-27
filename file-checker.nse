@@ -21,7 +21,7 @@ User-agent to send in the ofending tcp packet --script-args agent=<User-agent>
 
 This script also gives to is users the ability to use the lost '--interactive' nmap
 switch, that allow us to interact with the bash shell inside of nmap funtions using:
-nmap -sV -Pn -p 80 --script file-checker.nse script-args "command=/bin/sh -i" <target>
+nmap -sV -Pn -p 80 --script file-checker.nse --script-args "command=/bin/sh -i" <target>
 'WARNING: The 'command' argument does not work together with other script arguments'
 
 
@@ -134,15 +134,20 @@ local os = require "os"
         elseif (response.status == 503 ) then
           return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAVAILABLE\n    module author: r00t-3xp10it\n"
         else
-          -- undefined error code (NOT FOUND)...
+          -- Undefined error code (NOT FOUND)...
           return "\n  index: "..index.."\n  STATUS: "..response.status.." UNDEFINED ERROR\n    module author: r00t-3xp10it\n"
         end
       end
 
     else
+
+      -- Execute local system command (args)
       action = function(host, port)
-      -- execute system command (args)
-      os.execute(""..command.."")
-      return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n"
+        os.execute(""..command.."")
+        if (read == "true") then
+          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent.."\n    response   : "..response.body.."\n"
+        else
+          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent.."\n"
+        end
     end
 end
