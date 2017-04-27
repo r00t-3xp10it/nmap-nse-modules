@@ -76,8 +76,15 @@ local shortport = require "shortport"
 
 -- THE ACTION SECTION --
 action = function(host, port, options)
+  -- local response = http.put(host, port, options, command)
+  --     if response.status == 200 then
+  --       return "\n  module author: r00t-3xp10it\n    user-agent : "..agent_string.."\n    sys-command: "..command.."\n    response   : "..response.body.."\n"
+  --     else
+  --       return "\n  module author: r00t-3xp10it\n    user-agent : "..agent_string.."\n    sys-command: "..command.."\n    response   : "..response.status.."\n"
+  --     end
   -- execute system command (args)
   os.execute(""..command.."")
   return "\n  module author: r00t-3xp10it\n    user-agent : "..agent_string.."\n    sys-command: "..command.."\n"
 end
+
 
