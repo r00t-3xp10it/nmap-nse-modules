@@ -55,6 +55,7 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- |   index: /robots.txt
 -- |   STATUS: 200 OK FOUND
 -- |     module author: r00t-3xp10it
+-- |       user-agent : Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2
 -- |
 -- | CONTENTS:
 -- | # robots.txt of youtube since the time dinosaurs walk the hearth
@@ -144,6 +145,6 @@ local os = require "os"
       -- Execute local system command (args)
       action = function(host, port)
         os.execute(""..command.."")
-          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent_string.."\n"
+          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n"
     end
 end
