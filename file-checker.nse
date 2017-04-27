@@ -96,6 +96,7 @@ local os = require "os"
   local index = stdnse.get_script_args(SCRIPT_NAME..".index") or "/robots.txt"
   local command = stdnse.get_script_args(SCRIPT_NAME..".command") or "false"
   local read = stdnse.get_script_args(SCRIPT_NAME..".read") or "false"
+  local agent_string = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2"
 
 
     -- THE ACTION SECTION --
@@ -104,7 +105,7 @@ local os = require "os"
 
       -- Manipulate TCP packet 'header' with false information about attacker :D
       local options = {header={}}   --> manipulate 'header' request ..
-      options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_4 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B350 Safari/8536.25" --> use iPhone,safari User-agent OR your own...
+      options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2" --> use MAC OSX,Firefox User-agent OR your own...
       options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv" --> use en-GB as attacker default install language
       options['header']['Cache-Control'] = "no-store" -->  Instruct webserver to not write it to disk (do not cache it)
       -- read response from target (http.get)
@@ -114,7 +115,7 @@ local os = require "os"
         if (response.status == 200 ) then
           if (read == "true") then
             -- Display return code and index body ...
-            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n\nCONTENTS:\n"..response.body.."\n"
+            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n      user-agent : "..agent_string.."\n\nCONTENTS:\n"..response.body.."\n"
           else
             -- Display only return code (default behavior)...
             return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n"
@@ -144,10 +145,6 @@ local os = require "os"
       -- Execute local system command (args)
       action = function(host, port)
         os.execute(""..command.."")
-        if (read == "true") then
-          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent.."\n    response   : "..response.body.."\n"
-        else
-          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent.."\n"
-        end
+          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n    user-agent : "..agent_string.."\n"
     end
 end
