@@ -137,7 +137,7 @@ print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
          uri = intable --> define uri variable now
          break --> break execution (loop) if a match string its found (uri).
       else
-        limmit = limmitt+1 --> count how many interactions (loops done)
+        limmit = limmit+1 --> count how many interactions (loops done)
         print("|["..error_color..res.status..reset_color.."] => "..intable)
          os.execute("sleep 0.5")
          if ( limmit == 12 ) then --> why 12? Because its the number of URI links present in the {table} list.
