@@ -19,7 +19,7 @@ nmap --script-help AXISwebcam-recon.nse
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
-nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
+nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
 nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcams_reports.txt
 
 ]]
@@ -128,7 +128,7 @@ local check_uri = http.get(host, port, uri)
 if ( check_uri.status == 404 ) then
 print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
    -- None User Input uri found => using table {uril} List
-   uril = {"/view/viewer_index.shtml", "/MultiCameraFrame?Mode=", "/indexFrame.shtml", "/view/index.shtml", "/ViewerFrame.shtml", "/view/index2.shtml", "/RecordFrame?Mode=", "/webcam/view.shtml", "/view/view.shtml", "/index.shtml"}
+   uril = {"/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/visitor_center/i-cam.html", "/index.shtml"}
    -- loop Through {table} of uri url's
    for i, intable in pairs(uril) do
       local res = http.get(host, port, intable)
@@ -137,10 +137,10 @@ print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
          uri = intable --> define uri variable now
          break --> break execution (loop) if a match string its found (uri).
       else
-        limmit = limmit+1 --> count how many interactions (loops done)
+        limmit = limmitt+1 --> count how many interactions (loops done)
         print("|["..error_color..res.status..reset_color.."] => "..intable)
          os.execute("sleep 0.5")
-         if ( limmit == 10 ) then --> why 10? Because its the number of URI links present in the {table} list.
+         if ( limmit == 12 ) then --> why 12? Because its the number of URI links present in the {table} list.
             print("|[ABORT]: "..error_color.."None Match (uri) has been found in AXISwebcam-recon database."..reset_color)
             print("|[NOTES]: "..yellow_color.."--script-args uri=/CgiStart?page=Single&Mode=Motion&Language=1"..reset_color)
             print("|_")
@@ -167,9 +167,8 @@ local response = http.get(host, port, uri, options)
   -- Check if host addr respondes successfull [200]
   if ( response.status == 200 ) then
     local title = string.match(response.body, "<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)</[Tt][Ii][Tt][Ll][Ee]>")
-    print("| "..yellow_color.."AXISwebcam-recon"..reset_color..":")
-    
-     -- List {table} of HTTP TITLE tags -
+    print("| "..yellow_color.."AXISwebcam-recon"..reset_color..":")    
+     -- List {table} of HTTP TITLE tags
      tbl = {"AXIS Video Server", 
      "Live View / - AXIS", 
      "AXIS 2400 Video Server", 
@@ -183,15 +182,22 @@ local response = http.get(host, port, uri, options)
      "AXIS M3026 Network Camera", 
      "AXIS M1124 Network Camera", 
      "Network Camera Hwy285/cr43", 
+     "Axis 2420 Video Server 2.32", 
      "AXIS Q6045-E Network Camera", 
      "AXIS Q6044-E Network Camera", 
      "Network Camera NetworkCamera", 
      "AXIS P1435-LE Network Camera", 
      "AXIS P1425-LE Network Camera", 
      "Axis 2120 Network Camera 2.34", 
+     "Axis 2420 Network Camera 2.30", 
+     "Axis 2420 Network Camera 2.31", 
+     "Axis 2420 Network Camera 2.32", 
      "AXIS P1365 Mk II Network Camera", 
      "AXIS F34 Network Camera 6.50.2.3", 
      "AXIS 214 PTZ Network Camera 4.49", 
+     "Axis 2130 PTZ Network Camera 2.30", 
+     "Axis 2130 PTZ Network Camera 2.31", 
+     "Axis 2130 PTZ Network Camera 2.32", 
      "AXIS P5635-E Mk II Network Camera", 
      "AXIS Q7401 Video Encoder 5.51.5.1", 
      "AXIS Q6045-E Mk II Network Camera", 
@@ -204,7 +210,7 @@ local response = http.get(host, port, uri, options)
      "Live view  - AXIS 221 Network Camera", 
      "Live view  - AXIS 211 Network Camera", 
      "AXIS Q1765-LE Network Camera 5.55.2.3", 
-     "Live view  - AXIS P1354 Network Camera", 
+     "Live view  - AXIS P1354 Network Camera",  
      "Live view  - AXIS P1344 Network Camera", 
      "Live view  - AXIS M1114 Network Camera", 
      "Live view  - AXIS M1103 Network Camera", 
@@ -230,21 +236,20 @@ local response = http.get(host, port, uri, options)
      "Live view / - AXIS 205 Network Camera version 4.05.1", 
      "Live view - AXIS 213 PTZ Network Camera version 4.12"}
 
-
-  -- Loop Through {table} of HTTP TITLE tags
-  for i, intable in pairs(tbl) do
-    local validar = string.match(title, intable)
-    if ( validar ~= nil or title == intable ) then
-        print("|\n|   STATUS: "..green_color.."AXIS WEBCAM FOUND"..reset_color.."\n|     TITLE: "..green_color..intable..reset_color.."\n|       WEBCAM ACCESS: "..green_color.."http://"..host.ip..":"..port.number..uri..reset_color.."\n|       Module Author: "..by_module.."\n|_")
-        break --> break execution (loop) if a match string its found.
-     else
-        print("|  TESTING: "..intable)
-        os.execute("sleep 0.5")
-        f = f+1 --> count how many interactions (loops done)
-        if (f == 59) then --> why 59? Because its the number of TITLE tags present in the {table} list.
-          return "\n   STATUS: "..error_color.."NONE AXIS WEBCAM FOUND"..reset_color.."\n     Module Author: "..by_module.."\n\n"
+     -- Loop Through {table} of HTTP TITLE tags
+     for i, intable in pairs(tbl) do
+       local validar = string.match(title, intable)
+       if ( validar ~= nil or title == intable ) then
+           print("|\n|   STATUS: "..green_color.."AXIS WEBCAM FOUND"..reset_color.."\n|     TITLE: "..green_color..intable..reset_color.."\n|       WEBCAM ACCESS: "..green_color.."http://"..host.ip..":"..port.number..uri..reset_color.."\n|       Module Author: "..by_module.."\n|_")
+           break --> break execution (loop) if a match string its found.
+        else
+           print("|  TESTING: "..intable)
+           os.execute("sleep 0.5")
+           f = f+1 --> count how many interactions (loops done)
+           if (f == 66) then --> why 66? Because its the number of TITLE tags present in the {table} list.
+             return "\n   STATUS: "..error_color.."NONE AXIS WEBCAM FOUND"..reset_color.."\n     Module Author: "..by_module.."\n\n"
+           end
         end
      end
   end
- end
 end
