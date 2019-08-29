@@ -19,7 +19,7 @@ nmap --script-help AXISwebcam-recon.nse
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
-nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
 nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcams_reports.txt
 
 ]]
@@ -31,7 +31,7 @@ nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banne
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
--- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+-- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
 -- @output
 -- PORT     STATE SERVICE VERSION
 -- 8080/tcp open  http    Boa httpd
@@ -126,6 +126,7 @@ uri = stdnse.get_script_args(SCRIPT_NAME..".uri") or "/indexFrame.shtml"
 -- Check User Input uri response
 local check_uri = http.get(host, port, uri)
 if ( check_uri.status == 404 ) then
+print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
    -- None User Input uri found => using table {uril} List
    uril = {"/view/viewer_index.shtml", "/MultiCameraFrame?Mode=", "/indexFrame.shtml", "/view/index.shtml", "/ViewerFrame.shtml", "/view/index2.shtml", "/RecordFrame?Mode=", "/webcam/view.shtml", "/view/view.shtml", "/index.shtml"}
    -- loop Through {table} of uri url's
@@ -148,6 +149,8 @@ if ( check_uri.status == 404 ) then
          end
       end
    end
+else
+   print("|["..green_color..check_uri.status..reset_color.."] => "..uri)
 end
 print(" _")
 
