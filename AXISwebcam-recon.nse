@@ -1,8 +1,10 @@
 ---
--- Nmap NSE AXISwebcam-recon.nse - Version 1.8
--- Copy to: /usr/share/nmap/scripts/AXISwebcam-recon.nse
+-- Nmap NSE AXISwebcam-recon.nse - Version 1.9
+-- Module Author: r00t-3xp10it (ssa) & Cleiton Pinheiro (inurlbr)
+-- Notes: This nse script will NOT execute againts auth logins
+-- Copy nse To: /usr/share/nmap/scripts/AXISwebcam-recon.nse
 -- Update NSE database: sudo nmap --script-updatedb
--- execute: nmap --script-help AXISwebcam-recon.nse
+-- Execute nse: nmap --script-help AXISwebcam-recon.nse
 ---
 
 -- SCRIPT BANNER DESCRIPTION --
@@ -13,14 +15,15 @@ NSE script to detect if target [ip]:[port][/url] its an AXIS Network Camera tran
 This script also allow is users to send a fake User-Agent in the tcp packet <agent=User-Agent-String>
 and also allow is users to input a diferent uri= [/url] link to be scan, IF none uri= value its inputed, then
 this script tests a List of AXIS default [/url's] available in our database to brute force the HTML TITLE tag.
+'Notes: This nse script will NOT execute againts webcams found that require authentication logins (auth)'
 
 Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
-nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
-nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
-nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
-nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcams_reports.txt
+nmap -sV -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
+nmap -sV -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
+nmap -sS -Pn -p 80-86,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
+nmap -sS -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=http-headers.nse,AXISwebcam-recon.nse -oN webcam_reports.txt
 
 ]]
 
@@ -31,7 +34,7 @@ nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banne
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
--- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
+-- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
 -- @output
 -- PORT     STATE SERVICE VERSION
 -- 8080/tcp open  http    Boa httpd
@@ -125,8 +128,10 @@ os.execute("sleep 0.5")
 uri = stdnse.get_script_args(SCRIPT_NAME..".uri") or "/indexFrame.shtml"
 -- Check User Input uri response
 local check_uri = http.get(host, port, uri)
-if ( check_uri.status == 404 ) then
-print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
+if ( check_uri.status == 401 ) then
+   print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip..":"..port.number..uri..error_color.." (AUTH LOGIN FOUND)"..reset_color)
+elseif ( check_uri.status == 404 ) then
+   print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
    -- None User Input uri found => using table {uril} List
    uril = {"/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/visitor_center/i-cam.html", "/index.shtml"}
    -- loop Through {table} of uri url's
@@ -236,7 +241,7 @@ local response = http.get(host, port, uri, options)
      "Live view / - AXIS 205 Network Camera version 4.05.1", 
      "Live view - AXIS 213 PTZ Network Camera version 4.12"}
 
-     -- Loop Through {table} of HTTP TITLE tags
+     -- Loop Through {table} of HTTP TITLE tags --
      for i, intable in pairs(tbl) do
        local validar = string.match(title, intable)
        if ( validar ~= nil or title == intable ) then
