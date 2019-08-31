@@ -61,7 +61,7 @@ local string = require "string"
 local http = require "http"
 local os = require "os" --> required for (sleep)
 -- define loop limmit(s)
-f = 1
+f = 0
 limmit = 0
 
 
@@ -255,7 +255,7 @@ local response = http.get(host, port, uri, options)
            print("|  TESTING: "..intable)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
-           if (f == 67) then --> why 66? Because its the number of TITLE tags present in the {table} list.
+           if (f == 66) then --> why 66? Because its the number of TITLE tags present in the {table} list.
              return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
            end
         end
