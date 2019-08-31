@@ -13,14 +13,15 @@ NSE script to detect if target [ip]:[port][/url] its an AXIS Network Camera tran
 This script also allow is users to send a fake User-Agent in the tcp packet <agent=User-Agent-String>
 and also allow is users to input a diferent uri= [/url] link to be scan, IF none uri= value its inputed, then
 this script tests a List of AXIS default [/url's] available in our database to brute force the HTML TITLE tag.
+'Remark: This nse script will NOT execute againts webcams found that require authentication logins'
 
 Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
-nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcams_reports.txt
+nmap -sS -Pn -p 80,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+nmap -sS -v -Pn -n -T5 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcam_reports.txt
 
 ]]
 
@@ -126,7 +127,7 @@ uri = stdnse.get_script_args(SCRIPT_NAME..".uri") or "/indexFrame.shtml"
 -- Check User Input uri response
 local check_uri = http.get(host, port, uri)
 if ( check_uri.status == 401 ) then
-print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip..":"..port.number..uri.." (AUTH LOGIN FOUND)")
+print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip..":"..port.number..uri..error_color.." (AUTH LOGIN FOUND)"..reset_color)
 elseif ( check_uri.status == 404 ) then
 print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
    -- None User Input uri found => using table {uril} List
@@ -249,7 +250,7 @@ local response = http.get(host, port, uri, options)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
            if (f == 66) then --> why 66? Because its the number of TITLE tags present in the {table} list.
-             return "\n   STATUS: "..error_color.."NONE AXIS WEBCAM FOUND"..reset_color.."\n     Module Author: "..by_module.."\n\n"
+             return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
            end
         end
      end
