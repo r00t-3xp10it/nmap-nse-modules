@@ -1,5 +1,5 @@
 ---
--- Nmap NSE AXISwebcam-recon.nse - Version 1.8
+-- Nmap NSE AXISwebcam-recon.nse - Version 1.9
 -- Copy to: /usr/share/nmap/scripts/AXISwebcam-recon.nse
 -- Update NSE database: sudo nmap --script-updatedb
 -- execute: nmap --script-help AXISwebcam-recon.nse
@@ -19,9 +19,9 @@ Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
-nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
+nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
 nmap -sS -Pn -p 80,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T5 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcam_reports.txt
+nmap -sS -v -Pn -n -T5 -iR 500 -p 8080-8086 --open --script=http-headers.nse,AXISwebcam-recon.nse -D 65.49.82.3 -oN webcam_reports.txt
 
 ]]
 
@@ -31,7 +31,7 @@ nmap -sS -v -Pn -n -T5 -O -iR 500 -p 92,8080-8082 --open --reason --script=banne
 -- nmap --script-help AXISwebcam-recon.nse
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
--- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
+-- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
 -- @output
 -- PORT     STATE SERVICE VERSION
@@ -124,24 +124,25 @@ print(yellow_color.."Brute forcing Network Camera URL (uri)"..reset_color)
 os.execute("sleep 0.5")
 -- Define User Input uri variable
 uri = stdnse.get_script_args(SCRIPT_NAME..".uri") or "/indexFrame.shtml"
+
 -- Check User Input uri response
 local check_uri = http.get(host, port, uri)
 if ( check_uri.status == 401 ) then
 print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip..":"..port.number..uri..error_color.." (AUTH LOGIN FOUND)"..reset_color)
 elseif ( check_uri.status == 404 ) then
-print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
+print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..uri)
    -- None User Input uri found => using table {uril} List
    uril = {"/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/visitor_center/i-cam.html", "/index.shtml"}
    -- loop Through {table} of uri url's
    for i, intable in pairs(uril) do
       local res = http.get(host, port, intable)
       if ( res.status == 200 ) then
-         print("|["..green_color..res.status..reset_color.."] => "..intable)
+         print("|["..green_color..res.status..reset_color.."] "..host.ip.." => "..intable)
          uri = intable --> define uri variable now
          break --> break execution (loop) if a match string its found (uri).
       else
         limmit = limmit+1 --> count how many interactions (loops done)
-        print("|["..error_color..res.status..reset_color.."] => "..intable)
+        print("|["..error_color..res.status..reset_color.."] "..host.ip.." => "..intable)
          os.execute("sleep 0.5")
          if ( limmit == 12 ) then --> why 12? Because its the number of URI links present in the {table} list.
             print("|[ABORT]: "..error_color.."None Match (uri) has been found in AXISwebcam-recon database."..reset_color)
@@ -152,8 +153,12 @@ print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
          end
       end
    end
+-- Diferent error codes (mosquito needs this seting)
+elseif ( check_uri.status == 400 or check_uri.status == 403 or check_uri.status == 405 or check_uri.status == 500 or check_uri.status == 502 or check_uri.status == 503 or check_uri.status == 307 or check_uri.status == 302 or check_uri.status == 301 or check_uri.status == nil ) then
+   print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..uri)
+   do return end --> exit if any of this error codes returns
 else
-   print("|["..green_color..check_uri.status..reset_color.."] => "..uri)
+   print("|["..green_color..check_uri.status..reset_color.."] "..host.ip.." => "..uri)
 end
 print(" _")
 
@@ -172,7 +177,8 @@ local response = http.get(host, port, uri, options)
     local title = string.match(response.body, "<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)</[Tt][Ii][Tt][Ll][Ee]>")
     print("| "..yellow_color.."AXISwebcam-recon"..reset_color..":")    
      -- List {table} of HTTP TITLE tags
-     tbl = {"AXIS Video Server", 
+     tbl = {"TL-WR740N", 
+     "AXIS Video Server", 
      "Live View / - AXIS", 
      "AXIS 2400 Video Server", 
      "Network Camera TUCCAM1", 
@@ -184,7 +190,8 @@ local response = http.get(host, port, uri, options)
      "AXIS M5013 Network Camera", 
      "AXIS M3026 Network Camera", 
      "AXIS M1124 Network Camera", 
-     "Network Camera Hwy285/cr43", 
+     "Network Camera Hwy285/cr43",
+     "Login - Residential Gateway",  
      "Axis 2420 Video Server 2.32", 
      "AXIS Q6045-E Network Camera", 
      "AXIS Q6044-E Network Camera", 
@@ -249,7 +256,8 @@ local response = http.get(host, port, uri, options)
            print("|  TESTING: "..intable)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
-           if (f == 66) then --> why 66? Because its the number of TITLE tags present in the {table} list.
+           if (f == 68) then --> why 68? Because its the number of TITLE tags present in the {table} list.
+             print("|_")
              return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
            end
         end
