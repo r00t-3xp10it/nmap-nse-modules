@@ -15,7 +15,7 @@ NSE script to detect if target [ip]:[port][/url] its an AXIS Network Camera tran
 This script also allow is users to send a fake User-Agent in the tcp packet <agent=User-Agent-String>
 and also allow is users to input a diferent uri= [/url] link to be scan, IF none uri= value its inputed, then
 this script tests a List of AXIS default [/url's] available in our database to brute force the HTML TITLE tag.
-'Notes: This nse script will NOT execute againts webcams found that require authentication logins (auth)'
+'Remark: This nse script will NOT execute againts webcams found that require authentication logins (auth)'
 
 Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
