@@ -1,10 +1,8 @@
 ---
--- Nmap NSE AXISwebcam-recon.nse - Version 1.9
--- Module Author: r00t-3xp10it (ssa) & Cleiton Pinheiro (inurlbr)
--- Notes: This nse script will NOT execute againts auth logins
--- Copy nse To: /usr/share/nmap/scripts/AXISwebcam-recon.nse
+-- Nmap NSE AXISwebcam-recon.nse - Version 1.8
+-- Copy to: /usr/share/nmap/scripts/AXISwebcam-recon.nse
 -- Update NSE database: sudo nmap --script-updatedb
--- Execute nse: nmap --script-help AXISwebcam-recon.nse
+-- execute: nmap --script-help AXISwebcam-recon.nse
 ---
 
 -- SCRIPT BANNER DESCRIPTION --
@@ -15,15 +13,14 @@ NSE script to detect if target [ip]:[port][/url] its an AXIS Network Camera tran
 This script also allow is users to send a fake User-Agent in the tcp packet <agent=User-Agent-String>
 and also allow is users to input a diferent uri= [/url] link to be scan, IF none uri= value its inputed, then
 this script tests a List of AXIS default [/url's] available in our database to brute force the HTML TITLE tag.
-'Remark: This nse script will NOT brute force webcams found that require authentication login (auth)'
 
 Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
-nmap -sV -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
-nmap -sV -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
-nmap -sS -Pn -p 80-86,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
-nmap -sS -Pn -p 80-86,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T5 -O -iR 500 -p 80,8080-8082 --open --reason --script=http-headers.nse,AXISwebcam-recon.nse -oN webcam_reports.txt
+nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
+nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
+nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
+nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+nmap -sS -v -Pn -n -T4 -O -iR 500 -p 92,8080-8082 --open --reason --script=banner.nse,AXISwebcam-recon.nse -On webcams_reports.txt
 
 ]]
 
@@ -34,7 +31,7 @@ nmap -sS -v -Pn -n -T5 -O -iR 500 -p 80,8080-8082 --open --reason --script=http-
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 80.32.204.149
--- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+-- nmap -sS -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/" 194.150.15.187
 -- @output
 -- PORT     STATE SERVICE VERSION
 -- 8080/tcp open  http    Boa httpd
@@ -127,39 +124,35 @@ os.execute("sleep 0.5")
 -- Define User Input uri variable
 uri = stdnse.get_script_args(SCRIPT_NAME..".uri") or "/indexFrame.shtml"
 -- Check User Input uri response
-local ck_uri = http.get(host, port, uri)
-
--- None uri found => Checking table {uril} List
-if ( ck_uri.status == 404 ) then
-   print("|["..error_color..ck_uri.status..reset_color.."] "..host.ip.." => "..uri)
+local check_uri = http.get(host, port, uri)
+if ( check_uri.status == 401 ) then
+print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip..":"..port.number..uri.." (AUTH LOGIN FOUND)")
+elseif ( check_uri.status == 404 ) then
+print("|["..error_color..check_uri.status..reset_color.."] => "..uri)
+   -- None User Input uri found => using table {uril} List
    uril = {"/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/visitor_center/i-cam.html", "/index.shtml"}
    -- loop Through {table} of uri url's
    for i, intable in pairs(uril) do
       local res = http.get(host, port, intable)
       if ( res.status == 200 ) then
-         print("|["..green_color..res.status..reset_color.."] "..host.ip.." => "..intable)
+         print("|["..green_color..res.status..reset_color.."] => "..intable)
          uri = intable --> define uri variable now
          break --> break execution (loop) if a match string its found (uri).
       else
         limmit = limmit+1 --> count how many interactions (loops done)
-        print("|["..error_color..res.status..reset_color.."] "..host.ip.." => "..intable)
+        print("|["..error_color..res.status..reset_color.."] => "..intable)
          os.execute("sleep 0.5")
          if ( limmit == 12 ) then --> why 12? Because its the number of URI links present in the {table} list.
             print("|[ABORT]: "..error_color.."None Match (uri) has been found in AXISwebcam-recon database."..reset_color)
             print("|[NOTES]: "..yellow_color.."--script-args uri=/CgiStart?page=Single&Mode=Motion&Language=1"..reset_color)
             print("|_")
             os.execute("sleep 1")
-            return --> exit() if none match its found in our database   
+            return --> --> exit() if none match its found in our database   
          end
       end
    end
--- Diferent error codes (mosquito needs this seting)
-elseif ( ck_uri.status == 400 or ck_uri.status == 401 or ck_uri.status == 403 or ck_uri.status == 405 or ck_uri.status == 500 or ck_uri.status == 502 or ck_uri.status == 503 or ck_uri.status == 307 or ck_uri.status == nil ) then
-   print("|["..error_color..ck_uri.status..reset_color.."] "..host.ip.." => "..uri)
-   do return end --> exit if any of this error codes returns
 else
-   -- User Input uri or return.status == 200
-   print("|["..green_color..ck_uri.status..reset_color.."] "..host.ip.." => "..uri)
+   print("|["..green_color..check_uri.status..reset_color.."] => "..uri)
 end
 print(" _")
 
@@ -245,7 +238,7 @@ local response = http.get(host, port, uri, options)
      "Live view / - AXIS 205 Network Camera version 4.05.1", 
      "Live view - AXIS 213 PTZ Network Camera version 4.12"}
 
-     -- Loop Through {table} of HTTP TITLE tags --
+     -- Loop Through {table} of HTTP TITLE tags
      for i, intable in pairs(tbl) do
        local validar = string.match(title, intable)
        if ( validar ~= nil or title == intable ) then
@@ -256,7 +249,7 @@ local response = http.get(host, port, uri, options)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
            if (f == 66) then --> why 66? Because its the number of TITLE tags present in the {table} list.
-             return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
+             return "\n   STATUS: "..error_color.."NONE AXIS WEBCAM FOUND"..reset_color.."\n     Module Author: "..by_module.."\n\n"
            end
         end
      end
