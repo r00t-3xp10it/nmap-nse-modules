@@ -180,7 +180,6 @@ local response = http.get(host, port, uri, options)
      -- List {table} of HTTP TITLE tags
      tbl = {"TL-WR740N",
      "SNC-RZ30 HOME",  
-     "Network Camera", 
      "AXIS Video Server", 
      "Live View / - AXIS", 
      "Express6 Live Image", 
@@ -264,7 +263,7 @@ local response = http.get(host, port, uri, options)
            print("|  TESTING: "..intable)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
-           if (f == 75) then --> why 75? Because its the number of TITLE tags present in the {table} list.
+           if (f == 74) then --> why 74? Because its the number of TITLE tags present in the {table} list.
              print("|_")
              return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
            end
