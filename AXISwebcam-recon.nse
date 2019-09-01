@@ -29,7 +29,7 @@ nmap -sS -v -Pn -n -T5 -iR 700 -p 81-86,92,8001,8080-8086,55752-55758 --open --s
 
 ---
 -- @usage
--- nmap --script-help AXISwebcam-recon.nse  http://129.79.146.1 /view/viewer_index.shtml -- 164.54.143.14
+-- nmap --script-help AXISwebcam-recon.nse
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
