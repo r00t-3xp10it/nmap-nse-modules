@@ -1,8 +1,9 @@
 ---
--- Nmap NSE AXISwebcam-recon.nse - Version 1.9
+-- Nmap NSE AXISwebcam-recon.nse - Version 1.10
 -- Copy to: /usr/share/nmap/scripts/AXISwebcam-recon.nse
 -- Update NSE database: sudo nmap --script-updatedb
 -- execute: nmap --script-help AXISwebcam-recon.nse
+-- Port(s) accepted: 80-86,92,8001,8080-8086,50090,55752-55758
 ---
 
 -- SCRIPT BANNER DESCRIPTION --
@@ -17,18 +18,18 @@ this script tests a List of AXIS default [/url's] available in our database to b
 
 Some Syntax examples:
 nmap --script-help AXISwebcam-recon.nse
-nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
-nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
-nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
-nmap -sS -Pn -p 80,8080-8082 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T5 -iR 700 -p 92,8080-8086 --open --script=http-headers.nse,AXISwebcam-recon.nse -D 65.49.82.3 -oN webcam_reports.txt
+nmap -sV -Pn -p 80-86,92,8001,8080-8086,50090,55752-55754 --open --script AXISwebcam-recon.nse 216.99.115.136
+nmap -sV -Pn -p 80-86,92,8080-8086 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
+nmap -sS -Pn -p 80-86,92,8080-8086 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
+nmap -sS -Pn -p 80,8080-8086 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
+nmap -sS -v -Pn -n -T5 -iR 700 -p 81-86,92,8001,8080-8086,55752-55758 --open --script=http-headers.nse,AXISwebcam-recon.nse -D 65.49.82.3
 
 ]]
 
 
 ---
 -- @usage
--- nmap --script-help AXISwebcam-recon.nse
+-- nmap --script-help AXISwebcam-recon.nse  http://129.79.146.1 /view/viewer_index.shtml -- 164.54.143.14
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse 216.99.115.136
 -- nmap -sV -Pn -p 80-86,92,8080-8082 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 -- nmap -sS -Pn -p 80-86,92,8080-8082 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
@@ -115,7 +116,7 @@ local by_module = white_color.."r00t-3xp10it & Cleiton Pinheiro"..reset_color
 
 -- THE RULE SECTION --
 -- portrule = shortport.http --> Scan only the selected ports/proto/service_name in open state
-portrule = shortport.port_or_service({80, 81, 82, 83, 84, 85, 86, 92, 8080, 8081, 8082, 8083, 55752, 55754}, "http, http-proxy", "tcp", "open")
+portrule = shortport.port_or_service({80, 81, 82, 83, 84, 85, 86, 92, 8001, 8080, 8081, 8082, 8083, 50090, 55752, 55754}, "http, http-proxy", "tcp", "open")
 
 
 -- THE ACTION SECTION --
@@ -132,7 +133,7 @@ print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip.
 elseif ( check_uri.status == 404 ) then
 print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..uri)
    -- None User Input uri found => using table {uril} List
-   uril = {"/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/visitor_center/i-cam.html", "/index.shtml", "/stadscam/Live95j.asp", "/sub06/cam.php", "/CgiStart"}
+   uril = {"/webcam.html", "/1/webcam.html", "/cam/Gcam.html", "/sub06/cam.php", "/home/homeS.html", "/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/index.html?cam1=", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/stadscam/Live95j.asp", "/livecamera/homeJ.html", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/m/MultiCameraFrame?Mode=", "/visitor_center/i-cam.html", "/CgiStart?page=Single&Mode=", "/img/main.cgi?next_file=main.htm", "index.shtml"}
    -- loop Through {table} of uri url's
    for i, intable in pairs(uril) do
       local res = http.get(host, port, intable)
@@ -144,7 +145,7 @@ print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..u
         limmit = limmit+1 --> count how many interactions (loops done)
         print("|["..error_color..res.status..reset_color.."] "..host.ip.." => "..intable)
          os.execute("sleep 0.5")
-         if ( limmit == 15 ) then --> why 15? Because its the number of URI links present in the {table} list.
+         if ( limmit == 23 ) then --> why 23? Because its the number of URI links present in the {table} list.
             print("|[ABORT]: "..error_color.."None Match (uri) has been found in AXISwebcam-recon database."..reset_color)
             print("|[NOTES]: "..yellow_color.."--script-args uri=/CgiStart?page=Single&Mode=Motion&Language=1"..reset_color)
             print("|_")
@@ -177,9 +178,14 @@ local response = http.get(host, port, uri, options)
     local title = string.match(response.body, "<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)</[Tt][Ii][Tt][Ll][Ee]>")
     print("| "..yellow_color.."AXISwebcam-recon"..reset_color..":")    
      -- List {table} of HTTP TITLE tags
-     tbl = {"TL-WR740N", 
+     tbl = {"TL-WR740N",
+     "SNC-RZ30 HOME",  
+     "Network Camera", 
      "AXIS Video Server", 
      "Live View / - AXIS", 
+     "Express6 Live Image", 
+     "ExpressXL Live Image", 
+     "Network Camera Lobby", 
      "AXIS 2400 Video Server", 
      "Network Camera TUCCAM1", 
      "AXIS 243Q(2) Blade 4.45", 
@@ -190,6 +196,7 @@ local response = http.get(host, port, uri, options)
      "AXIS M5013 Network Camera", 
      "AXIS M3026 Network Camera", 
      "AXIS M1124 Network Camera", 
+     "Network Camera HVM-WebCam", 
      "Network Camera Hwy285/cr43",
      "Login - Residential Gateway",  
      "Axis 2420 Video Server 2.32", 
@@ -202,6 +209,7 @@ local response = http.get(host, port, uri, options)
      "Axis 2420 Network Camera 2.30", 
      "Axis 2420 Network Camera 2.31", 
      "Axis 2420 Network Camera 2.32", 
+     "Network Camera NetworkCamera1", 
      "AXIS P1365 Mk II Network Camera", 
      "AXIS F34 Network Camera 6.50.2.3", 
      "AXIS 214 PTZ Network Camera 4.49", 
@@ -256,7 +264,7 @@ local response = http.get(host, port, uri, options)
            print("|  TESTING: "..intable)
            os.execute("sleep 0.5")
            f = f+1 --> count how many interactions (loops done)
-           if (f == 68) then --> why 68? Because its the number of TITLE tags present in the {table} list.
+           if (f == 75) then --> why 75? Because its the number of TITLE tags present in the {table} list.
              print("|_")
              return "\n   STATUS: NONE AXIS WEBCAM FOUND\n     Module Author: r00t-3xp10it & Cleiton Pinheiro\n\n"
            end
