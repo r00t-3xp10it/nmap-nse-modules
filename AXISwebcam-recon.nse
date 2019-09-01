@@ -22,7 +22,7 @@ nmap -sV -Pn -p 80-86,92,8001,8080-8086,50090,55752-55754 --open --script AXISwe
 nmap -sV -Pn -p 80-86,92,8080-8086 --open --script AXISwebcam-recon.nse --script-args "uri=/view/viewer_index.shtml" 217.78.137.43
 nmap -sS -Pn -p 80-86,92,8080-8086 --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" 50.93.227.204
 nmap -sS -Pn -p 80,8080-8086 --open --script AXISwebcam-recon.nse --script-args "agent=Mozilla/5.0 (compatible),uri=/fd" 194.150.15.187
-nmap -sS -v -Pn -n -T5 -iR 700 -p 81-86,92,8001,8080-8086,55752-55758 --open --script=http-headers.nse,AXISwebcam-recon.nse -D 65.49.82.3
+nmap -sS -v -Pn -n -T5 -iR 700 -p 80-86,92,8001,8080-8086,55752-55758 --open --script=http-headers.nse,AXISwebcam-recon.nse -D 65.49.82.3
 
 ]]
 
@@ -133,7 +133,7 @@ print("|["..error_color..check_uri.status..reset_color.."] => http://"..host.ip.
 elseif ( check_uri.status == 404 ) then
 print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..uri)
    -- None User Input uri found => using table {uril} List
-   uril = {"/webcam.html", "/1/webcam.html", "/cam/Gcam.html", "/sub06/cam.php", "/home/homeS.html", "/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/index.html?cam1=", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/stadscam/Live95j.asp", "/livecamera/homeJ.html", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/m/MultiCameraFrame?Mode=", "/visitor_center/i-cam.html", "/CgiStart?page=Single&Mode=", "/img/main.cgi?next_file=main.htm", "index.shtml"}
+   uril = {"/webcam.html", "/1/webcam.html", "/cam/Gcam.html", "/sub06/cam.php", "/home/homeS.html", "/webcam_code.php", "/view/view.shtml", "/indexFrame.shtml", "/view/index.shtml", "/view/index2.shtml", "/webcam/view.shtml", "/ViewerFrame.shtml", "/RecordFrame?Mode=", "/stadscam/Live95j.asp", "/livecamera/homeJ.html", "/MultiCameraFrame?Mode=", "/view/viewer_index.shtml", "/m/MultiCameraFrame?Mode=", "/visitor_center/i-cam.html", "/CgiStart?page=Single&Mode=", "/img/main.cgi?next_file=main.htm", "index.shtml"}
    -- loop Through {table} of uri url's
    for i, intable in pairs(uril) do
       local res = http.get(host, port, intable)
@@ -145,7 +145,7 @@ print("|["..error_color..check_uri.status..reset_color.."] "..host.ip.." => "..u
         limmit = limmit+1 --> count how many interactions (loops done)
         print("|["..error_color..res.status..reset_color.."] "..host.ip.." => "..intable)
          os.execute("sleep 0.5")
-         if ( limmit == 23 ) then --> why 23? Because its the number of URI links present in the {table} list.
+         if ( limmit == 22 ) then --> why 22? Because its the number of URI links present in the {table} list.
             print("|[ABORT]: "..error_color.."None Match (uri) has been found in AXISwebcam-recon database."..reset_color)
             print("|[NOTES]: "..yellow_color.."--script-args uri=/CgiStart?page=Single&Mode=Motion&Language=1"..reset_color)
             print("|_")
