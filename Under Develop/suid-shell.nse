@@ -1,5 +1,5 @@
 ---
--- Nmap NSE suid-shell.nse - Version 1.3
+-- Nmap NSE suid-shell.nse - Version 1.4
 -- Copy nse to: /usr/share/nmap/scripts/suid-shell.nse
 -- Update db  : sudo nmap --script-updatedb
 -- executing  : nmap --script-help suid-shell.nse
