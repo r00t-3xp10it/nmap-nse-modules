@@ -17,6 +17,7 @@
 -- [2] URI's added: /fullsize.jpg?camera=, /hugesize.jpg?camera=, /axis-cgi/basicdeviceinfo.cgi
 --                  /mjpg/video.mjpg, /mjpg/1/video.mjpg, /mpeg4/media.amp, /videostream.asf?user=
 --                  /cgi-bin/viewer/video.jpg, /videostream.cgi?user=, /control/faststream.jpg?stream=
+-- [3] fix: http.identify_404() --> Identify servers that answer [200] to invalid HTTP requests
 ---
 
 description = [[
@@ -36,12 +37,12 @@ remark: 'This nse script will NOT produce outputs while brute forcing webcam ver
 
 Syntax examples
 nmap --script-help AXISwebcam-enum.nse
-nmap -sS -T4 222.155.98.15 -p 8081 --open --script AXISwebcam-enum
+nmap -sS -T3 222.155.98.15 -p 8081 --open --script AXISwebcam-enum
 nmap -sS -T3 183.95.71.129 -p 8081 --open --script AXISwebcam-enum --script-args logfile="$pwd\Nmap_scan.txt"
-nmap -sS -T4 192.46.209.62 -p 8082 --script AXISwebcam-enum --script-args agent="Mozilla/5.0 (compatible; EvilMonkey)"
-nmap -sS -T4 193.93.22.133 -p 8080 --open --script AXISwebcam-enum --script-args agent="Mozilla/5.0",uri="/camera.shtml"
+nmap -sS -T3 192.46.209.62 -p 8082 --script AXISwebcam-enum --script-args agent="Mozilla/5.0 (compatible; EvilMonkey)"
+nmap -sS -T3 193.93.22.133 -p 8080 --open --script AXISwebcam-enum --script-args agent="Mozilla/5.0",uri="/camera.shtml"
 nmap -sS -T4 161.81.122.107 -p 8080-8082 --open --script AXISwebcam-enum --script-args uri="/CgiStart/loadingpage=cam.shtml"
-nmap -sS -v -T5 -iR 800 -p 8080-8082 --open --script AXISwebcam-enum -D 4.207.247.138,52.123.131.14
+nmap -sS -v -T4 -iR 800 -p 8080-8082 --open --script AXISwebcam-enum -D 4.207.247.138,52.123.131.14
 
 Outputs
 |AXISwebcam-enum:
@@ -51,10 +52,10 @@ Outputs
 |    [200] 216.99.115.136:8080 => /view/index.shtml
 |
 |  STATUS: AXIS WEBCAM FOUND
-|  ID: CVE:CVE-2025-30026
-|  Risk factor: Medium CVSSv2: 5.3 (MEDIUM) (AV:N/AC:L/Au:N/C:C/I:C/A:C)
-|    A flaw in the Axis Camera Station Server that could lead to an authentication
-|    bypass by default password settings or by brute force user:password credentials
+|    ID: CVE:CVE-2025-30026
+|    Risk factor: Medium CVSSv2: 5.3 (MEDIUM) (AV:N/AC:L/Au:N/C:C/I:C/A:C)
+|      A flaw in the Axis Camera Station Server that could lead to an authentication
+|      bypass by default password settings or by brute force user:password credentials
 |
 |  Disclosure date: 2025-07-11
 |  Exploit results:
@@ -72,12 +73,12 @@ Outputs
 ---
 -- @usage
 -- nmap --script-help AXISwebcam-enum.nse
--- nmap -sS -T4 222.155.98.15 -p 8081 --open --script AXISwebcam-enum
+-- nmap -sS -T3 222.155.98.15 -p 8081 --open --script AXISwebcam-enum
 -- nmap -sS -T3 183.95.71.129 -p 8081 --open --script AXISwebcam-enum --script-args logfile="$pwd\Nmap_scan.txt"
--- nmap -sS -T4 192.46.209.62 -p 8082 --script AXISwebcam-enum --script-args agent="Mozilla/5.0 (compatible; EvilMonkey)"
--- nmap -sS -T4 193.93.22.133 -p 8080 --open --script AXISwebcam-enum --script-args agent="Mozilla/5.0",uri="/camera.shtml"
+-- nmap -sS -T3 192.46.209.62 -p 8082 --script AXISwebcam-enum --script-args agent="Mozilla/5.0 (compatible; EvilMonkey)"
+-- nmap -sS -T3 193.93.22.133 -p 8080 --open --script AXISwebcam-enum --script-args agent="Mozilla/5.0",uri="/camera.shtml"
 -- nmap -sS -T4 161.81.122.107 -p 8080-8082 --open --script AXISwebcam-enum --script-args uri="/CgiStart/loadingpage=cam.shtml"
--- nmap -sS -v -T5 -iR 800 -p 8080-8082 --open --script AXISwebcam-enum -D 4.207.247.138,52.123.131.14
+-- nmap -sS -v -T4 -iR 800 -p 8080-8082 --open --script AXISwebcam-enum -D 4.207.247.138,52.123.131.14
 -- @output
 -- |AXISwebcam-enum:
 -- |  Brute force AXIS network camera URL:
@@ -126,15 +127,44 @@ options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") 
 options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv"
 options['header']['Cache-Control'] = "no-store"
 
-
 portrule = shortport.port_or_service({80, 81, 82, 83, 84, 85, 86, 92, 8080, 8081, 8082, 8083, 55752, 55754}, "http, http-proxy", "tcp", "open")
 
 action = function(host, port)
     print("|AXISwebcam-enum:")
     print("|  Brute force AXIS network camera URL:")
 
+    -- Identify servers that answer [200] to invalid HTTP requests
+    -- and exit them (abort exec) as these would invalidate the tests.
+    local status_404, result_404, _ = http.identify_404(host, port)
+    if ( status_404 and result_404 == 200 ) then
+        print("|    [200] => http://"..host.ip..":"..port.number..uri)
+        print("|")
+        print("|  STATUS: invalid HTTP requests")
+        print("|  ID: CVE:CVE-2025-30026")
+        print("|    REASON: All URIs tested return status [200] OK")
+        print("|      Module Author: r00t-3xp10it & Cleiton Pinheiro")
+        print("|_\n")
+
+        -- append data to logfile?
+        if ( logfile ~= "false" ) then
+            local file = io.open(logfile, "a")
+            file:write("|AXISwebcam-enum:\n")
+            file:write("|  Brute force AXIS network camera URL:\n")
+            file:write("|    [200] "..host.ip..":"..port.number.." => "..uri.."\n")
+            file:write("|\n")
+            file:write("|  STATUS: invalid HTTP requests\n")
+            file:write("|  ID: CVE:CVE-2025-30026\n")
+            file:write("|    REASON:  All URIs tested return status [200] OK\n")
+            file:write("|        Module Author: r00t-3xp10it & Cleiton Pinheiro\n")
+            file:write("|_\n")
+            file:close()
+        end
+        return
+    end
+
     -- Check target host http.response.codes
-    local check_uri = http.get(host, port, uri, options)
+    -- Make sure that uri respondes with 200 [OK] { no redirection | no_cache }
+    local check_uri = http.get(host, port, uri, options, { redirect_ok = false, no_cache = true })
     if ( check_uri.status == 401 ) then   --> uri auth login found
         print("|    ["..check_uri.status.."] => http://"..host.ip..":"..port.number..uri.." (AUTH LOGIN FOUND)")
         print("|")
@@ -512,7 +542,7 @@ action = function(host, port)
 
     -- Read response from target (http.get)
     -- search for webcam version\vendor from <title> tag
-    local response = http.get(host, port, uri, options)
+    local response = http.get(host, port, uri, options, { redirect_ok = false, no_cache = true })
     if ( response.status == 200 ) then
         local title = string.match(response.body, "<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)</[Tt][Ii][Tt][Ll][Ee]>")
 
