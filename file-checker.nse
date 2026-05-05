@@ -1,12 +1,12 @@
 ---
 -- Nmap NSE file-checker.nse - Version 1.6
--- Copy script to: /usr/share/nmap/scripts/file-checker.nse
--- Update db: sudo nmap --script-updatedb
+-- [linux:admin] Copy to: /usr/share/nmap/scripts/file-checker.nse
+-- [linux:admin] Update NSE database: sudo nmap --script-updatedb
+-- [windows:admin] copy to: C:\Program Files (x86)\nmap\scripts\file-checker.nse
+-- [windows:admin] Update NSE database: nmap --script-updatedb
 -- executing: nmap --script-help file-checker.nse
 ---
 
-
--- SCRIPT BANNER DESCRIPTION --
 description = [[
 
 Author: r00t-3xp10it
@@ -27,7 +27,9 @@ nmap -sV -Pn -p 80 --script file-checker.nse --script-args "command=/bin/sh -i" 
 
 Some Syntax examples:
 nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
-nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/etc/passwd" <target or domain>
+nmap -sS -p 8080 --open --script file-checker --script-args strsearch="500",index="/globalSIPsettings.html" 162.14.226.94
+nmap -sS -p 8080 --open --script file-checker --script-args strsearch="No static",index="/globalSIPsettings.html",read="true" 162.14.226.94
+nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args strsearch="Disallow:" 23.37.165.175
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
@@ -41,7 +43,7 @@ nmap -sI -Pn -p 80 --scan-delay 8 --script file-checker.nse --script-args "index
 -- @usage
 -- nmap --script-help file-checker.nse
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse <target or domain>
--- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/etc/passwd" <target or domain>
+-- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/etc/passwd" 23.37.165.175
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "command=/bin/sh -i" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "index=/robots.txt,read=true" <target or domain>
 -- nmap -sS -Pn -p 80 --open --script file-checker.nse --script-args "agent=Mozilla/5.0 (compatible; EvilMonkey)" <target or domain>
@@ -81,70 +83,83 @@ author = "r00t-3xp10it"
 license = "Same as Nmap--See http://nmap.org/book/man-legal.html"
 categories = {"discovery", "safe"}
 
-
 -- DEPENDENCIES (lua nse libraries) --
 local shortport = require "shortport"
-local stdnse = require ('stdnse')
+local stdnse = require "stdnse"
+local string = require "string"
 local http = require "http"
 local os = require "os"
 
+-- nse @args declarations
+local read = stdnse.get_script_args(SCRIPT_NAME..".read") or "false"
+local command = stdnse.get_script_args(SCRIPT_NAME..".command") or "false"
+local index = stdnse.get_script_args(SCRIPT_NAME..".index") or "/robots.txt"
+local strsearch = stdnse.get_script_args(SCRIPT_NAME..".strsearch") or "false"
+local agent_string = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2"
 
-  -- THE RULE SECTION --
-  -- Port rule will only execute if port 80/443 tcp http/https its on open state
-  portrule = shortport.port_or_service({80, 443}, "http, https", "tcp", "open")
-  -- Seach for string stored in variable @args or use the default ones...
-  local index = stdnse.get_script_args(SCRIPT_NAME..".index") or "/robots.txt"
-  local command = stdnse.get_script_args(SCRIPT_NAME..".command") or "false"
-  local read = stdnse.get_script_args(SCRIPT_NAME..".read") or "false"
-  local agent_string = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2"
+-- Port rule will only execute if port 80/443 tcp http/https its on open state
+portrule = shortport.port_or_service({80, 8080, 8081, 8082, 8083}, "http, http-proxy", "tcp", "open")
 
+-- THE ACTION SECTION --
+if (command == "false") then
+   action = function(host, port)
 
-    -- THE ACTION SECTION --
-    if (command == "false") then
-      action = function(host, port)
+     -- Manipulate TCP packet 'header' with false information about attacker :D
+     local options = {header={}}   --> manipulate 'header' request ..
+     options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2" --> use MAC OSX,Firefox User-agent OR your own...
+     options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv" --> use en-GB as attacker default install language
+     options['header']['Cache-Control'] = "no-store" -->  Instruct webserver to not write it to disk (do not cache it)
 
-      -- Manipulate TCP packet 'header' with false information about attacker :D
-      local options = {header={}}   --> manipulate 'header' request ..
-      options['header']['User-Agent'] = stdnse.get_script_args(SCRIPT_NAME..".agent") or "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ko; rv:1.9.1b2) Gecko/20081201 Firefox/3.1b2" --> use MAC OSX,Firefox User-agent OR your own...
-      options['header']['Accept-Language'] = "en-GB,en;q=0.8,sv" --> use en-GB as attacker default install language
-      options['header']['Cache-Control'] = "no-store" -->  Instruct webserver to not write it to disk (do not cache it)
-      -- read response from target (http.get)
-      local response = http.get(host, port, index, options)
+     -- read response from target (http.get)
+     local response = http.get(host, port, index, options)
 
-        -- Check if 'index' exist on target webserver
-        if (response.status == 200 ) then
-          if (read == "true") then
-            -- Display return code and index body ...
-            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n      user-agent : "..agent_string.."\n\nCONTENTS:\n"..response.body.."\n"
-          else
-            -- Display only return code (default behavior)...
-            return "\n  index: "..index.."\n  STATUS: "..response.status.." OK FOUND\n    module author: r00t-3xp10it\n"
-          end
+     if (response.status == 200 ) then
+       if (read == "true") then
 
-        -- More Error codes displays (NOT FOUND)...
-        elseif (response.status == 400 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." BAD REQUEST\n    module author: r00t-3xp10it\n"
-        elseif (response.status == 302 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." REDIRECTED\n    module author: r00t-3xp10it\n"
-        elseif (response.status == 401 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAUTHORIZED\n    module author: r00t-3xp10it\n"
-        elseif (response.status == 404 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." NOT FOUND\n    module author: r00t-3xp10it\n"
-        elseif (response.status == 403 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." FORBIDDEN\n    module author: r00t-3xp10it\n"
-        elseif (response.status == 503 ) then
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAVAILABLE\n    module author: r00t-3xp10it\n"
-        else
-          -- Undefined error code (NOT FOUND)...
-          return "\n  index: "..index.."\n  STATUS: "..response.status.." UNDEFINED ERROR\n    module author: r00t-3xp10it\n"
-        end
-      end
+         if (strsearch ~= "false") then
+           if (string.match(response.body, strsearch)) then
+             return "\n  index: "..index.."\n  STATE: "..response.status.." [found]\n  stringSearch: "..strsearch.." [found]\n\nCONTENTS:\n"..response.body.."\n"
+           else
+             return "\n  index: "..index.."\n  STATE: "..response.status.." [found]\n  stringSearch: "..strsearch.." [not found]\n\nCONTENTS:\n"..response.body.."\n"
+           end
+         else
+           -- dont search string --- just read contents
+           return "\n  index: "..index.."\n  STATE: "..response.status.." [found]\n\nCONTENTS:\n"..response.body.."\n"
+         end
 
-    else
+       elseif (strsearch ~= "false") then
+         if (string.match(response.body, strsearch)) then
+           return "\n  index: "..index.."\n  STATE: "..response.status.." [found]\n  stringSearch: "..strsearch.." [found]"
+         else
+           return "\n  index: "..index.."\n  STATE: "..response.status.." [found]\n  stringSearch: "..strsearch.." [not found]"
+         end
+       else
+         -- just search @args.index
+         return "\n  index: "..index.."\n  STATE: "..response.status.." [found]"
+       end
 
-      -- Execute local system command (args)
-      action = function(host, port)
-        os.execute(""..command.."")
-          return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n"
-    end
+       -- more error codes
+     elseif (response.status == 400 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." BAD REQUEST\n    module author: r00t-3xp10it\n"
+     elseif (response.status == 302 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." REDIRECTED\n    module author: r00t-3xp10it\n"
+     elseif (response.status == 401 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAUTHORIZED\n    module author: r00t-3xp10it\n"
+     elseif (response.status == 404 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." NOT FOUND\n    module author: r00t-3xp10it\n"
+     elseif (response.status == 403 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." FORBIDDEN\n    module author: r00t-3xp10it\n"
+     elseif (response.status == 503 ) then
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." UNAVAILABLE\n    module author: r00t-3xp10it\n"
+     else
+       -- Undefined error code (NOT FOUND)...
+       return "\n  index: "..index.."\n  STATUS: "..response.status.." UNDEFINED ERROR\n    module author: r00t-3xp10it\n"
+     end
+   end
+else
+     -- Execute local system command (args)
+     action = function(host, port)
+        os.execute(command)
+        return "\n  module author: r00t-3xp10it\n    sys-command: "..command.."\n"
+     end
 end
