@@ -880,14 +880,14 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "X" -ForegroundColor DarkRed -NoNewline
                write-host "] " -NoNewline
-               write-host "Invalid option, please try again .." -ForegroundColor DarkRed
+               write-host "Invalid option [empty], please try again .." -ForegroundColor DarkRed
                write-host "| help: this function accepts links <http(s)://>"
                write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
             }
 
-            If($ManualInstallNse -match '^(htt(p|ps)://)$')
+            If($ManualInstallNse -match '^(htt(p|ps)://)')
             {
                $nsename = ($ManualInstallNse).Split('/')[-1]
                Write-Host "`n[" -NoNewline
