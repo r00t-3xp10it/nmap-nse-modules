@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
    Author: @r00t-3xp10it
-   Helper - install nse scripts into nmap database
+   Helper - install nse scripts into nmap database - v1.3
 
    This script identifys if the nse script its installed in nmap
    database then presents two options to user: install or update
@@ -278,6 +278,27 @@ PORT     STATE SERVICE REASON
 
 "@;
 
+$SecretFinder = @"
+
+secret-finder.nse:
+Detects exposed sensitive files, misconfigured backups, version control
+directories, environment files and private resources that may cause critical
+information leakage on web servers. [scan ports: 80 tcp, 443 tcp]
+
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    open     http
+| secret-finder:  [INFO]  [200]  /
+|  [INFO]  [200]  /images
+|  [CRITICAL]  [403]  /.svn
+|  [CRITICAL]  [403]  /.svn/
+|  [CRITICAL]  [403]  /.htaccess
+|  [CRITICAL]  [403]  /.htpasswd
+|  [CRITICAL]  [403]  /.htaccess.bak
+|_ [CRITICAL]  [403]  /.htpasswd.bak
+
+"@;
+
 
 ## Main Menu
 function Invoke-Menu() 
@@ -295,6 +316,8 @@ function Invoke-Menu()
       Write-Host "  5       smtp-vuln-cve2020-28017  2020-04-13  CVE-2020-28017  CRITICAL 9.8"
       Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
       Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
+      Write-Host "  8       secret-finder            2026-o1-10  ***             ***"
+      Write-Host "  manual  install one nse script" -ForegroundColor DarkCyan
       Write-Host "  Q       Quit this script [exit]" -ForegroundColor Green
       Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
       $Choise = Read-Host
@@ -777,9 +800,180 @@ function Invoke-Menu()
             }
             ## end of function
          }
+         8
+         {
+            ## install secret-finder
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\secret-finder.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $SecretFinder
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstalSecret = Read-Host
+            If($InstalSecret -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: secret-finder.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/secret-finder.nse" -OutFile "$Env:TMP\secret-finder.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving secret-finder.nse to $NmapInstallPath\scripts\secret-finder.nse"
+               Move-Item -Path "$Env:TMP\secret-finder.nse" -Destination "$NmapInstallPath\scripts\secret-finder.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\secret-finder.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with secret-finder.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving secret-finder.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         manual
+         {
+            ## install ONE nse script manually
+            Write-Host "input nse absoluct path: " -ForegroundColor Blue -NoNewline
+            $ManualInstallNse = Read-Host
+
+            ## check user inputs
+            If([string]::IsNullOrEmpty($ManualInstallNse))
+            {
+               write-host "[" -NoNewline
+               write-host "X" -ForegroundColor DarkRed -NoNewline
+               write-host "] " -NoNewline
+               write-host "Invalid option, please try again .." -ForegroundColor DarkRed
+               write-host "| help: this function accepts links <http(s)://>"
+               write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
+               cmd /c 'pause'
+               Invoke-Menu
+            }
+
+            If($ManualInstallNse -match '^(htt(p|ps)://)$')
+            {
+               $nsename = ($ManualInstallNse).Split('/')[-1]
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: $nsename"
+               iwr -Uri "$ManualInstallNse" -OutFile "$Env:TMP\$nsename"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving $nsename to $NmapInstallPath\scripts\$nsename"
+               Move-Item -Path "$Env:TMP\$nsename" -Destination "$NmapInstallPath\scripts\$nsename" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\$nsename" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with $nsename"
+                  nmap.exe --script-updatedb
+
+                  write-host "`n[" -NoNewline
+                  write-host "*" -ForegroundColor Green -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "$NmapInstallPath\scripts\$nsename installed" -ForegroundColor Green
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving $nsename to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+
+               cmd /c 'pause'
+               Invoke-Menu
+            }
+            ElseIf($ManualInstallNse -imatch '^(.nse)$')
+            {
+               $nsename = ($ManualInstallNse).Split('\\')[-1]
+               If(-not(Test-Path -Path "$ManualInstallNse" -PathType Leaf))
+               {
+                   write-host "[" -NoNewline
+                   write-host "X" -ForegroundColor DarkRed -NoNewline
+                   write-host "] " -NoNewline
+                   write-host "Invalid option, nse not found.." -ForegroundColor DarkRed
+                   cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               Write-Host "[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] moving $nsename to $NmapInstallPath\scripts\$nsename"
+               Move-Item -Path "$ManualInstallNse" -Destination "$NmapInstallPath\scripts\$nsename" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\$nsename" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "2" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with $nsename"
+                  nmap.exe --script-updatedb
+
+                  write-host "`n[" -NoNewline
+                  write-host "*" -ForegroundColor Green -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "$NmapInstallPath\scripts\$nsename installed" -ForegroundColor Green
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving $nsename to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+
+               cmd /c 'pause'
+               Invoke-Menu
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "X" -ForegroundColor DarkRed -NoNewline
+               write-host "] " -NoNewline
+               write-host "Invalid option, nse not found.." -ForegroundColor DarkRed
+               write-host "| help: this function accepts links <http(s)://>"
+               write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
+               cmd /c 'pause'
+               Invoke-Menu
+            }
+         }
          Q 
          {
-            Start-Sleep -Seconds 1
+            Start-Sleep -Milliseconds 800
             Exit
          }   
          default
@@ -788,7 +982,7 @@ function Invoke-Menu()
             write-host "X" -ForegroundColor DarkRed -NoNewline
             write-host "] " -NoNewline
             write-host "Invalid option, please try again .." -ForegroundColor DarkRed
-            Start-Sleep -Seconds 4
+            Start-Sleep -Seconds 3
          }
       }
    }
