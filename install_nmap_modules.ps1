@@ -2,17 +2,21 @@
 .SYNOPSIS
    Author: @r00t-3xp10it
    Helper - install nse scripts into nmap database
+
+   This script identifys if the nse script its installed in nmap
+   database then presents two options to user: install or update
    
    [nse list]
-   vulners.nse,
-   AXISwebcam-enum.nse,
-   CVE-2026-7633-enum.nse,
+   vulners.nse
+   abb-cve-2019-7226
+   AXISwebcam-enum.nse
+   CVE-2026-7633-enum.nse
    dlink-cve-2019-13101.nse
    smtp-vuln-cve2020-28017-through-28026-21nails.nse
 
 .NOTES
    Administrator privileges required to install\update modules
-   .\install_nmap_modules.ps1 -nmapinstallpath 'C:\Nmap\Install\directory' --> nmap install location
+   .\install_nmap_modules.ps1 -nmapinstallpath 'C:\Nmap\Install\directory' --> input nmap install location
 #>
 
 [CmdletBinding(PositionalBinding=$false)] param(
