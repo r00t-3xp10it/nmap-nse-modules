@@ -12,14 +12,11 @@
 
 .NOTES
    Administrator privileges required to install\update modules
-   .\install_nmap_modules.ps1 -mode 'install' --> install the 5 nse scripts in nmap database
-   .\install_nmap_modules.ps1 -mode 'update'  --> update nmap databse with AXISwebcam-enum.nse again
    .\install_nmap_modules.ps1 -nmapinstallpath 'C:\Nmap\Install\directory' --> nmap install location
 #>
 
 [CmdletBinding(PositionalBinding=$false)] param(
-   [string]$NmapInstallPath="C:\Program Files (x86)\Nmap",
-   [string]$Mode="install"
+   [string]$NmapInstallPath="C:\Program Files (x86)\Nmap"
 )
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -27,17 +24,20 @@ $host.UI.RawUI.WindowTitle = "@install_nmap_nse_modules"
 
 $FirtBanner = @"
 
-     __ \    __|   _ \
-     |   | \__ \   __/
-    _|  _| ____/ \___| [Nmap Scripting Engine]
+   __ \    __|   _ \
+   |   | \__ \   __/
+  _|  _| ____/ \___| [Nmap Scripting Engine]
+  install unreleased nse modules to nmap-db
 
 "@;
 
 ## check for admin privileges
 If([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544") -match "false")
 {
-   Write-Host "[ABORT]: " -NoNewline
-   Write-Host "administrator privileges required to install nse modules..`n" -ForegroundColor Red
+   Write-Host "[" -NoNewline
+   Write-Host "ABORT" -ForegroundColor DarkRed -NoNewline
+   Write-Host "]: " -NoNewline
+   Write-Host "administrator privileges required to install nse modules..`n" -ForegroundColor DarkRed
    Start-Sleep -Seconds 2
    return
 }
@@ -45,39 +45,25 @@ If([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -ma
 ## check nmap install directory
 If(-not(Test-Path -Path "$NmapInstallPath"))
 {
-   Write-Host "[ABORT]: nmap directory not found in: $NmapInstallPath" -ForegroundColor Red
-   Write-Host "Input nmap directory: " -NoNewline
+   Write-Host "[" -NoNewline
+   Write-Host "ABORT" -ForegroundColor DarkRed -NoNewline
+   Write-Host "]: " -NoNewline
+   Write-Host "nmap directory not found in: $NmapInstallPath" -ForegroundColor DarkRed
+   Write-Host "Input nmap directory: " -NoNewline -ForegroundColor Blue
    $NmapInstallPath = Read-Host
 
    If(-not(Test-Path -Path "$NmapInstallPath"))
    {
-      Write-Host "[ABORT]: nmap directory not found in: $NmapInstallPath" -ForegroundColor Red
+      Write-Host "[" -NoNewline
+      Write-Host "ABORT" -ForegroundColor DarkRed -NoNewline
+      Write-Host "]: " -NoNewline
+      Write-Host "nmap directory not found in: $NmapInstallPath`n" -ForegroundColor DarkRed
       return
    }
 }
 
-## Install 5 nse modules into nse database
-# TCPinspector.ps1 requires this modules
-If($Mode -imatch '^(install)$')
-{
-   Write-Host "[*] installing nmap nse scripts" -ForegroundColor Green
-   Start-Sleep -Seconds 1
-   clear-host
-   Write-Host $FirtBanner -ForegroundColor DarkRed
-
-   echo ""
-   ## install Vulners.nse
-   If (Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf)
-   {
-      write-host "[" -NoNewline
-      write-host "x" -ForegroundColor Red -NoNewline
-      write-host "] " -NoNewline
-      write-host "$NmapInstallPath\scripts\vulners.nse" -ForegroundColor Red -NoNewline
-      write-host " already installed"
-   }
-   Else
-   {
-$StartBanner = @"
+## Modules description
+$VulnsBanner = @"
 
 vulners.nse:
 For each available CPE the script prints out known vulns (links to the correspondent info) and correspondent CVSS scores.
@@ -89,7 +75,7 @@ Its work is pretty simple:
 * if no info is found this way, try to get it using the software name alone
 * print the obtained info out
 
-Output
+@Output
 PORT    STATE SERVICE VERSION 
 22/tcp  open  ssh     OpenSSH 9.6p1 Ubuntu 3Ubuntu13.16 (Ubuntu Linux; Protocol 2.0)
 |vulners:
@@ -104,151 +90,7 @@ PORT    STATE SERVICE VERSION
 
 "@;
 
-      write-host $StartBanner
-      write-host "[+] install vulners.nse (yes|no): " -NoNewline -ForegroundColor Green
-      $InstallVulners = Read-Host
-      If ($InstallVulners -imatch '^(y|yes)$')
-      {
-         Write-Host "`n[*] downloading: vulners.nse"
-         iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/vulners.nse" -OutFile "$Env:TMP\vulners.nse"|Unblock-File
-         Write-Host "[*] move vulners.nse to $NmapInstallPath\scripts\vulners.nse"
-         Move-Item -Path "$Env:TMP\vulners.nse" -Destination "$NmapInstallPath\scripts\vulners.nse" -Force
-
-         If (Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf)
-         {
-            Write-Host "[*] moved vulners.nse to nmap scripts directory"
-            Write-Host "[+] updating nmap nse database with vulners.nse"
-            nmap.exe --script-updatedb
-            Write-Host ""
-
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-
-            write-host "[" -NoNewline
-            write-host "x" -ForegroundColor Green -NoNewline
-            write-host "] " -NoNewline
-            write-host "$NmapInstallPath\scripts\vulners.nse installed" -ForegroundColor Green
-
-         }
-         Else
-         {
-            Write-Host "[-] ERROR: moving vulners.nse to nmap scripts directory" -ForegroundColor Red
-            start-sleep -seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-         }
-      }
-      else
-      {
-         Clear-Host
-         Write-Host $FirtBanner -ForegroundColor DarkRed
-      }
-   }
-
-   ## install CVE-2026-7633-enum.nse
-   If (Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf)
-   {
-      write-host "[" -NoNewline
-      write-host "x" -ForegroundColor Red -NoNewline
-      write-host "] " -NoNewline
-      write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -ForegroundColor Red -NoNewline
-      write-host " already installed"
-   }
-   Else
-   {
-
-$StartBanner = @"
-
-CVE-2026-7633-enum:
-A vulnerability was identified in Totolink N300RH 6.1c.1353_B20190305, this impacts the function
-setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the @argument FileName
-leads to file inclusion, remote code execution, buffer overflow or modification of configurations
-
-how detection works
-CVE-2026-7633-enum.nse searchs for /cgi-bin/cstecgi.cgi [uri] on target host has first vulnerability check
-has second test it searchs for 'setUploadSetting' vulnerable function (inside /cgi-bin/cstecgi.cgi) then it
-searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to confirm vulnerable versions
-
-Output
-|CVE-2026-7633-enum:
-|  Totolink N300RH V6.1c
-|  STATE: VULNERABLE
-|    ID: CVE:CVE-2026-7633
-|    Risk factor: 6.4 (MEDIUM) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
-|      A vulnerability was identified in Totolink N300RH 6.1c.1353_B20190305, this impacts the function
-|      setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the argument FileName leads
-|      to file inclusion, remote code execution, buffer overflow or modification of configurations
-|
-|  Disclosure date: 2026-05-01
-|  Exploit results:
-|    Uri: http://216.99.115.136:8080/cgi-bin/cstecgi.cgi
-|    attack vector: setUploadSetting [vulnerable]
-|    firmware version: N300RH 6.1c.1390 [vulnerable]
-|    affected versions: V6.1c.1353, V6.1c.1390
-|      module Author: r00t-3xp10it
-|
-|  Referencies:
-|    https://www.tenable.com/cve/CVE-2026-7633
-|    https://github.com/xyh4ck/iot_poc/tree/main/TOTOLINK/N300RHv4/03_setUploadSetting_ECFNP
-|_
-
-"@;
-
-      write-host $StartBanner
-      write-host "[+] install CVE-2026-7633-enum.nse (yes|no): " -NoNewline -ForegroundColor Green
-      $InstallVulners = Read-Host
-      If ($InstallVulners -imatch '^(y|yes)$')
-      {
-         Write-Host "`n[*] downloading: CVE-2026-7633-enum.nse"
-         iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-7633-enum.nse" -OutFile "$Env:TMP\CVE-2026-7633-enum.nse"|Unblock-File
-         Write-Host "[*] move CVE-2026-7633-enum.nse to $NmapInstallPath\scripts\CVE-2026-7633-enum.nse"
-         Move-Item -Path "$Env:TMP\CVE-2026-7633-enum.nse" -Destination "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -Force
-
-         If (Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf)
-         {
-            Write-Host "[*] moved CVE-2026-7633-enum.nse to nmap scripts directory"
-            Write-Host "[+] updating nmap nse database with CVE-2026-7633-enum.nse"
-            nmap.exe --script-updatedb
-            Write-Host ""
-
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-
-            write-host "[" -NoNewline
-            write-host "x" -ForegroundColor Green -NoNewline
-            write-host "] " -NoNewline
-            write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse installed" -ForegroundColor Green
-         }
-         Else
-         {
-            Write-Host "[-] ERROR: moving CVE-2026-7633-enum.nse to nmap scripts directory" -ForegroundColor Red
-            start-sleep -seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-         }
-      }
-      else
-      {
-         Clear-Host
-         Write-Host $FirtBanner -ForegroundColor DarkRed
-      }
-   }
-
-   ## install AXISwebcam-enum.nse
-   If (Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
-   {
-      write-host "[" -NoNewline
-      write-host "x" -ForegroundColor Red -NoNewline
-      write-host "] " -NoNewline
-      write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -ForegroundColor Red -NoNewline
-      write-host " already installed"
-   }
-   Else
-   {
-
-$StartBanner = @"
+$AXISWebCamBanner = @"
 
 AXISwebcam-enum:
 NSE script to detect if target [ip]:[port][/url] its an AXIS Network Camera transmiting (live).
@@ -263,7 +105,7 @@ against the target host:port/uri - If a match is found, the script attempts to e
 manufacturer from the http <title> tag as a final check before identifying the target as an active AXIS webcam
 remark: 'This nse script will NOT produce outputs while brute forcing webcam version\vendor from <title> tag'
 
-Outputs
+@Output
 |AXISwebcam-enum:
 |  Brute force AXIS network camera URL:
 |    [404] 216.99.115.136:8080 => /axis-cgi/media.cgi
@@ -289,59 +131,44 @@ Outputs
 
 "@;
 
-      write-host $StartBanner
-      write-host "[+] install AXISwebcam-enum.nse (yes|no): " -NoNewline -ForegroundColor Green
-      $InstallAXIS = Read-Host
-      If ($InstallAXIS -imatch '^(y|yes)$')
-      {
-         Write-Host "`n[*] downloading: AXISwebcam-enum.nse"
-         iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
-         Write-Host "[*] move AXISwebcam-enum.nse to $NmapInstallPath\scripts\AXISwebcam-enum.nse"
-         Move-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Destination "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -Force
+$TotoLinkBanner = @"
 
-         If (Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
-         {
-            Write-Host "[*] moved AXISwebcam-enum.nse to nmap scripts directory"
-            Write-Host "[+] updating nmap nse database with AXISwebcam-enum.nse"
-            nmap.exe --script-updatedb
-            Write-Host ""
+CVE-2026-7633-enum:
+A vulnerability was identified in Totolink N300RH 6.1c.1353_B20190305, this impacts the function
+setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the @argument FileName
+leads to file inclusion, remote code execution, buffer overflow or modification of configurations
 
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
+how detection works
+CVE-2026-7633-enum.nse searchs for /cgi-bin/cstecgi.cgi [uri] on target host has first vulnerability check
+has second test it searchs for 'setUploadSetting' vulnerable function (inside /cgi-bin/cstecgi.cgi) then it
+searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to confirm vulnerable versions
 
-            write-host "[" -NoNewline
-            write-host "x" -ForegroundColor Green -NoNewline
-            write-host "] " -NoNewline
-            write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse installed" -ForegroundColor Green
-         }
-         Else
-         {
-            Write-Host "[-] ERROR: moving AXISwebcam-enum.nse to nmap scripts directory" -ForegroundColor Red
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-         }
-      }
-      else
-      {
-         Clear-Host
-         Write-Host $FirtBanner -ForegroundColor DarkRed
-      }
-   }
+@Output
+|CVE-2026-7633-enum:
+|  Totolink N300RH V6.1c
+|  STATE: VULNERABLE
+|    ID: CVE:CVE-2026-7633
+|    Risk factor: 6.4 (MEDIUM) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
+|      A vulnerability was identified in Totolink N300RH 6.1c.1353_B20190305, this impacts the function
+|      setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the argument FileName leads
+|      to file inclusion, remote code execution, buffer overflow or modification of configurations
+|
+|  Disclosure date: 2026-05-01
+|  Exploit results:
+|    Uri: http://216.99.115.136:8080/cgi-bin/cstecgi.cgi
+|    attack vector: setUploadSetting [vulnerable]
+|    firmware version: N300RH 6.1c.1390 [vulnerable]
+|    affected versions: V6.1c.1353, V6.1c.1390
+|      module Author: r00t-3xp10it
+|
+|  Referencies:
+|    https://www.tenable.com/cve/CVE-2026-7633
+|    https://github.com/xyh4ck/iot_poc/tree/main/TOTOLINK/N300RHv4/03_setUploadSetting_ECFNP
+|_
 
-   ## install dlink-cve-2019-13101.nse
-   If (Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf)
-   {
-      write-host "[" -NoNewline
-      write-host "x" -ForegroundColor Red -NoNewline
-      write-host "] " -NoNewline
-      write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -ForegroundColor Red -NoNewline
-      write-host " already installed"
-   }
-   Else
-   {
-$StartBanner = @"
+"@;
+
+$DlinkBanner = @"
 
 dlink-cve-2019-13101.nse:
 Detects whether the D-Link DIR-600 or DIR-615 router is vulnerable to Incorrect Access Control Vulnerability (CVE-2019-13101).
@@ -350,9 +177,8 @@ A remote vulnerability was discovered on D-Link DIR-600M/DIR-615 Wireless Home R
 which leads to disclosure of sensitive user info about the WAN, including but not limited to PPPoE, DNS configuration etc, also
 allowing us to change the router configuration settings.
 
-@output
+@Output
 dlink-cve-2019-13101:
-|   VULNERABLE:
 |   D-Link DIR-600/615 Wireless Home Router
 |   State: VULNERABLE
 |   IDs:  CVE:CVE-2019-13101
@@ -376,178 +202,495 @@ dlink-cve-2019-13101:
 
 "@;
 
-      write-host $StartBanner
-      write-host "[+] install dlink-cve-2019-13101.nse (yes|no): " -NoNewline -ForegroundColor Green
-      $InstallDlink = Read-Host
-      If ($InstallDlink -imatch '^(y|yes)$')
-      {
-         Write-Host "[*] downloading: dlink-cve-2019-13101.nse"
-         iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
-         Write-Host "[*] move dlink-cve-2019-13101.nse to $NmapInstallPath\scripts\dlink-cve-2019-13101.nse"
-         Move-Item -Path "$Env:TMP\dlink-cve-2019-13101.nse" -Destination "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -Force
+$ABBBanner = @"
 
-         If (Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf)
-         {
-            Write-Host "[*] moved dlink-cve-2019-13101.nse to nmap scripts directory"
-            Write-Host "[+] updating nmap nse database with dlink-cve-2019-13101.nse"
-            nmap.exe --script-updatedb
-            Write-Host ""
+abb-cve-2019-7226:
+NSE script to detect if target [ip]:[port][/url] its affected by CVE-2019-7226 (Improper Authentication)
+The ABB IDAL HTTP server CGI interface contains a URL that allows an unauthenticated attacker to bypass authentication
+and gain access to privileged functions. Specifically, /cgi/loginDefaultUser creates a session in an authenticated state
+and returns the session ID along with what may be the username and cleartext password of the user. An attacker can then
+supply an IDALToken value in a cookie, which will allow them to perform privileged operations such as restarting the service
+with /cgi/restart.
 
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-
-            write-host "[" -NoNewline
-            write-host "x" -ForegroundColor Green -NoNewline
-            write-host "] " -NoNewline
-            write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse installed" -ForegroundColor Green
-         }
-         Else
-         {
-            Write-Host "[-] ERROR: moving dlink-cve-2019-13101.nse to nmap scripts directory" -ForegroundColor Red
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
-         }
-      }
-      else
-      {
-         Clear-Host
-         Write-Host $FirtBanner -ForegroundColor DarkRed
-      }
-   }
-
-   ## install smtp-vuln-cve2020-28017-through-28026-21nails.nse
-   If (Test-path -path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -PathType Leaf)
-   {
-      write-host "[" -NoNewline
-      write-host "x" -ForegroundColor Red -NoNewline
-      write-host "] " -NoNewline
-      write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -ForegroundColor Red -NoNewline
-      write-host " already installed"
-   }
-   Else
-   {
-$StartBanner = @"
-
-smtp-vuln-cve2020-28017-through-28026-21nails.nse:
-Exim remote code execution via CVE-2020-28017 through CVE-2020-28026 also known as 21Nails
-
-We check for the presence of the vulnerability via:
-  - Connecting to port 25
-  - Receiving the banner
-  - Checking the version
-  - Returning the state
-
-This check is not intrusive, because:
- - We only complete a TCP connection to the port
- - We do not complete the SMTP protocol handshake
-
-This check may have False Positives if:
-  - Patches are back ported but the version number is not updated
-
-This check may have False Negatives if:
-  - the Exim server is configured to remove Exim and/or the version number
-
-How to use:
-  nmap --script ./smtp-vuln-cve2020-28017-through-28026-21nails.nse [target]
-
-References:
-* https://www.qualys.com/2021/05/04/21nails/21nails.txt
+@output
+PORT     STATE SERVICE VERSION
+80/tcp open  http  Apache httpd 2.4.38
+| abb-cve-2019-7226:
+|   ABB IDAL HTTP server CGI (Improper Authentication)
+|   State: VULNERABLE
+|   IDs:  CVE:CVE-2019-7226
+|   Risk factor: Higth  CVSSv2: 8.8 HIGH (AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)
+|     The ABB IDAL HTTP server CGI interface contains a URL that allows an unauthenticated attacker to bypass
+|     authentication and gain access to privileged functions. Specifically, /cgi/loginDefaultUser creates a session
+|     in an authenticated state and returns the session ID along with what may be the username and cleartext password
+|     of the user. An attacker can then supply an IDALToken value in a cookie, which will allow them to perform privileged
+|     operations such as restarting the service with /cgi/restart. A GET request to /cgi/loginDefaultUser may result in
+|     '1 #S_OK IDALToken=532c8632b86694f0232a68a0897a145c admin admin' or a similar response.
+|
+|   Disclosure date: 2019-Fev-04
+|   Exploit results:
+|     Uri: http://192.168.1.71:80/cgi/loginDefaultUser
+|     Auth-Cookie: IDALToken=008b1047k72068r6100a69b0381d007p
+|     Credentials: admin : MyS3cr3t
+|
+|   Referencies:
+|     https://nvd.nist.gov/vuln/detail/CVE-2019-7226
+|     https://www.akaoma.com/ressources/cve/gain-privilege/cve-2019-7226
+|     https://packetstormsecurity.com/files/153402/ABB-IDAL-HTTP-Server-Authentication-Bypass.html
+|_
 
 "@;
 
-      write-host $StartBanner
-      write-host "[+] install smtp-vuln-cve2020-28017-through-28026-21nails.nse (yes|no): " -NoNewline -ForegroundColor Green
-      $InstallSmtp = Read-Host
-      If ($InstallSmtp -imatch '^(y|yes)$')
+
+## Main Menu
+function Invoke-Menu() 
+{      
+   Do
+   {
+      Clear-Host
+      Write-Host $FirtBanner -ForegroundColor DarkRed
+      Write-Host "  option  module                   disclosure  CVE             severity"
+      Write-Host "  ------  ------                   ----------  ---             --------" -ForegroundColor Blue
+      Write-Host "  1       vulners                  ***         ***             ***"
+      Write-Host "  2       AXISwebcam-enum          2025-07-11  CVE-2025-30026  MEDIUM 5.3 "
+      Write-Host "  3       CVE-2026-7633-enum       2026-05-01  CVE-2026-7633   MEDIUM 6.4"
+      Write-Host "  4       dlink-cve-2019-13101     2019-08-08  CVE-2019-13101  MEDIUM 7.5"
+      Write-Host "  5       smtp-vuln-cve2020-28017  2020-04-13  CVE-2020-28017  CRITICAL 9.8"
+      Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
+      Write-Host "  Q       Quit this script [exit]" -ForegroundColor Green
+      Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
+      $Choise = Read-Host
+ 
+      switch ($Choise) 
       {
-         Write-Host "`n[*] downloading: smtp-vuln-cve2020-28017-through-28026-21nails.nse"
-         iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/smtp-vuln-cve2020-28017-through-28026-21nails.nse" -OutFile "$Env:TMP\smtp-vuln-cve2020-28017-through-28026-21nails.nse"|Unblock-File
-         Write-Host "[*] move smtp-vuln-cve2020-28017-through-28026-21nails.nse to $NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse"
-         Move-Item -Path "$Env:TMP\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Destination "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Force
-
-         If (Test-path -path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -PathType Leaf)
+         1 
          {
-            Write-Host "[*] moved smtp-vuln-cve2020-28017-through-28026-21nails.nse to nmap scripts directory"
-            Write-Host "[+] updating nmap nse database with smtp-vuln-cve2020-28017-through-28026-21nails.nse"
-            nmap.exe --script-updatedb
-            Write-Host ""
+            ## INSTALL VULNERS
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
 
-            Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
+            write-host $VulnsBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
 
+            $InstallVulners = Read-Host
+            If($InstallVulners -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: vulners.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/vulners.nse" -OutFile "$Env:TMP\vulners.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving vulners.nse to $NmapInstallPath\scripts\vulners.nse"
+               Move-Item -Path "$Env:TMP\vulners.nse" -Destination "$NmapInstallPath\scripts\vulners.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with vulners.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\vulners.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\vulners.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving vulners.nse to nmap scripts directory`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         2 
+         {
+            ## INSTALL AXISwebcam-enum
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $AXISWebCamBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallAXIS = Read-Host
+            If($InstallAXIS -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: AXISwebcam-enum.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving AXISwebcam-enum.nse to $NmapInstallPath\scripts\AXISwebcam-enum.nse"
+               Move-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Destination "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with AXISwebcam-enum.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving AXISwebcam-enum.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         3 
+         {
+            ## INSTALL CVE-2020-7633-enum
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $TotoLinkBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallTotoLink = Read-Host
+            If($InstallTotoLink -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: CVE-2026-7633-enum.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-7633-enum.nse" -OutFile "$Env:TMP\CVE-2026-7633-enum.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving CVE-2026-7633-enum.nse to $NmapInstallPath\scripts\CVE-2026-7633-enum.nse"
+               Move-Item -Path "$Env:TMP\CVE-2026-7633-enum.nse" -Destination "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with CVE-2026-7633-enum.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving CVE-2026-7633-enum.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         4
+         {
+            ## INSTALL dlink-cve-2019-13101
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $DlinkBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallDlink = Read-Host
+            If($InstallDlink -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: dlink-cve-2019-13101.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving dlink-cve-2019-13101.nse to $NmapInstallPath\scripts\dlink-cve-2019-13101.nse"
+               Move-Item -Path "$Env:TMP\dlink-cve-2019-13101.nse" -Destination "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with dlink-cve-2019-13101.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving dlink-cve-2019-13101.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function    
+         }
+         5
+         {
+            ## INSTALL smtp-vuln-cve2020-28017-through-28026-21nails.nse
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $DlinkBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallSMTP = Read-Host
+            If($InstallSMTP -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: dlink-cve-2019-13101.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/smtp-vuln-cve2020-28017-through-28026-21nails.nse" -OutFile "$Env:TMP\smtp-vuln-cve2020-28017-through-28026-21nails.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving smtp-vuln-cve2020-28017-through-28026-21nails.nse to $NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse"
+               Move-Item -Path "$Env:TMP\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Destination "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with smtp-vuln-cve2020-28017-through-28026-21nails.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving smtp-vuln-cve2020-28017-through-28026-21nails.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         6
+         {
+            ## INSTALL abb-cve-2019-7226.nse
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $ABBBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallABB = Read-Host
+            If($InstallABB -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: abb-cve-2019-7226.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving abb-cve-2019-7226.nse to $NmapInstallPath\scripts\abb-cve-2019-7226.nse"
+               Move-Item -Path "$Env:TMP\abb-cve-2019-7226.nse" -Destination "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with abb-cve-2019-7226.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving abb-cve-2019-7226.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
+         Q 
+         {
+            Start-Sleep -Seconds 1
+            Exit
+         }   
+         default
+         {
             write-host "[" -NoNewline
-            write-host "x" -ForegroundColor Green -NoNewline
+            write-host "X" -ForegroundColor DarkRed -NoNewline
             write-host "] " -NoNewline
-            write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse installed" -ForegroundColor Green
-         }
-         Else
-         {
-            Write-Host "[-] ERROR: moving smtp-vuln-cve2020-28017-through-28026-21nails.nse to nmap scripts directory" -ForegroundColor Red
+            write-host "Invalid option, please try again .." -ForegroundColor DarkRed
             Start-Sleep -Seconds 4
-            clear-host
-            Write-Host $FirtBanner -ForegroundColor DarkRed
          }
       }
-      else
-      {
-         Clear-Host
-         Write-Host $FirtBanner -ForegroundColor DarkRed
-      }
    }
-}
+   until($Menu -eq 'q')
+}  
 
-## Update AXISwebcam-enum.nse
-If($Mode -imatch '^(update)$')
-{
-   <#
-   .SYNOPSIS
-      Author: @r00t-3xp10it
-      Helper - update nmap nse database with AXISwebcam-enum.nse script
-               even if AXISwebcam-enum.nse its are allready present in db
 
-   .NOTES
-      Administrator privileges required to update modules
-      .\install_nmap_modules.ps1 -mode 'update'  --> update nmap databse with AXISwebcam-enum.nse again
-      .\install_nmap_modules.ps1 -nmapinstallpath 'C:\Nmap\Install\directory' --> nmap install location
-   #>
+## invoke menu
+Invoke-Menu
 
-   Write-Host "[*] updating nmap nse database" -ForegroundColor Green
-   Start-Sleep -Seconds 1
-
-   ## Updating AXISwebcam-enum.nse
-   Write-Host "[*] downloading: AXISwebcam-enum.nse"
-   iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
-
-   Write-Host "[*] move AXISwebcam-enum.nse to $NmapInstallPath\scripts\AXISwebcam-enum.nse"
-   Move-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Destination "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -Force
-
-   If(Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
-   {
-      Write-Host "[*] moved AXISwebcam-enum.nse to nmap scripts directory"
-      Write-Host "[+] updating nmap nse database with AXISwebcam-enum.nse"
-      nmap.exe --script-updatedb
-   }
-   Else
-   {
-      Write-Host "[-] ERROR: moving AXISwebcam-enum.nse to nmap scripts directory" -ForegroundColor Red
-   }
-
-   ## Display modules description
-   If($Description.IsPresent)
-   {
-      nmap --script-help AXISwebcam-enum.nse
-   }
-}
-
-## cleanup
-Remove-Item -Path "$Env:TMP\vulners.nse" -Force
-Remove-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Force
-Remove-Item -Path "$Env:TMP\dlink-cve-2019-13101.nse" -Force
-Remove-Item -Path "$Env:TMP\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Force
-
-echo ""
-Start-Sleep -Seconds 2
 exit
