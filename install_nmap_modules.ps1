@@ -12,12 +12,14 @@
    AXISwebcam-enum.nse
    CVE-2026-7633-enum.nse
    dlink-cve-2019-13101.nse
+   http-livestreet-brute.nse
    smtp-vuln-cve2020-28017-through-28026-21nails.nse
 
 .NOTES
    Administrator privileges required to install\update modules
    .\install_nmap_modules.ps1 -nmapinstallpath 'C:\Nmap\Install\directory' --> input nmap install location
 #>
+
 
 [CmdletBinding(PositionalBinding=$false)] param(
    [string]$NmapInstallPath="C:\Program Files (x86)\Nmap"
@@ -31,7 +33,7 @@ $FirtBanner = @"
    __ \    __|   _ \
    |   | \__ \   __/
   _|  _| ____/ \___| [Nmap Scripting Engine]
-  install unreleased nse modules to nmap-db
+  install unreleased nse modules into nmap-db
 
 "@;
 
@@ -126,7 +128,7 @@ remark: 'This nse script will NOT produce outputs while brute forcing webcam ver
 |  Exploit results:
 |    TITLE: Live view  - AXIS 211 Network Camera version 4.11
 |    WEBCAM ACCESS: http://216.99.115.136:8080/view/index.shtml
-|      Module Author: r00t-3xp10it & Cleiton Pinheiro
+|      module Author: r00t-3xp10it & Cleiton Pinheiro
 |
 |  Referencies:
 |    https://www.cisa.gov/news-events/ics-advisories/icsa-25-352-08
@@ -194,9 +196,10 @@ dlink-cve-2019-13101:
 |
 |   Disclosure date: 2019-Ago-08
 |   Exploit results:
-|       Uri: http://37.99.213.95:443/
-|       DLink version: DIR-600 Ver 2.17
-|       Found a match between (TITLE|PPPoE)
+|     Uri: http://37.99.213.95:443/
+|     DLink version: DIR-600 Ver 2.17
+|     Found a match between (TITLE|PPPoE)
+|       module Author: r00t-3xp10it
 |
 |   Referencies:
 |     https://nvd.nist.gov/vuln/detail/CVE-2019-13101
@@ -236,12 +239,42 @@ PORT     STATE SERVICE VERSION
 |     Uri: http://192.168.1.71:80/cgi/loginDefaultUser
 |     Auth-Cookie: IDALToken=008b1047k72068r6100a69b0381d007p
 |     Credentials: admin : MyS3cr3t
+|       module Author: r00t-3xp10it
 |
 |   Referencies:
 |     https://nvd.nist.gov/vuln/detail/CVE-2019-7226
 |     https://www.akaoma.com/ressources/cve/gain-privilege/cve-2019-7226
 |     https://packetstormsecurity.com/files/153402/ABB-IDAL-HTTP-Server-Authentication-Bypass.html
 |_
+
+"@;
+
+$LiveBanner = @"
+
+http-livestreet-brute.nse:
+performs brute force password auditing against livestreet CMS installations.
+
+This script uses the unpwdb and brute libraries to perform password guessing.
+Any successful guesses are stored using the credentials library.
+
+@usage
+nmap -sV --script http-livestreet-brute <target>
+nmap -sV --script http-livestreet-brute
+     --script-args 'userdb=users.txt,passdb=passwds.txt,http-livestreet-brute.hostname=domain.com,
+                    http-livestreet-brute.threads=3,brute.firstonly=true' <target>
+
+referencies:
+   https://nvd.nist.gov/vuln/detail/cve-2017-5638
+   https://github.com/Z-0ne/ScanS2-045-Nmap
+
+@output
+PORT     STATE SERVICE REASON
+80/tcp   open  http    syn-ack
+| http-livestreet-brute:
+|   Accounts
+|     admin:qwerty => Login correct
+|   Statistics
+|_    Perfomed 103 guesses in 17 seconds, average tps: 6
 
 "@;
 
@@ -261,6 +294,7 @@ function Invoke-Menu()
       Write-Host "  4       dlink-cve-2019-13101     2019-08-08  CVE-2019-13101  MEDIUM 7.5"
       Write-Host "  5       smtp-vuln-cve2020-28017  2020-04-13  CVE-2020-28017  CRITICAL 9.8"
       Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
+      Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
       Write-Host "  Q       Quit this script [exit]" -ForegroundColor Green
       Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
       $Choise = Read-Host
@@ -675,6 +709,74 @@ function Invoke-Menu()
             }
             ## end of function
          }
+         7
+         {
+            ## install http-livestreet-brute.nse
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $LiveBanner
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstallLIve = Read-Host
+            If($InstallLIve -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: http-livestreet-brute.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/http-livestreet-brute.nse" -OutFile "$Env:TMP\http-livestreet-brute.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving http-livestreet-brute.nse to $NmapInstallPath\scripts\http-livestreet-brute.nse"
+               Move-Item -Path "$Env:TMP\http-livestreet-brute.nse" -Destination "$NmapInstallPath\scripts\http-livestreet-brute.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with http-livestreet-brute.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse installed" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving http-livestreet-brute.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ## end of function
+         }
          Q 
          {
             Start-Sleep -Seconds 1
@@ -690,9 +792,8 @@ function Invoke-Menu()
          }
       }
    }
-   until($Menu -eq 'q')
+   until($Choise -eq 'q')
 }  
-
 
 ## invoke menu
 Invoke-Menu
