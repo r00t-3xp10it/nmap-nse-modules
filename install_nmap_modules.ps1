@@ -473,7 +473,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -562,7 +562,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -651,7 +651,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -740,7 +740,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -829,7 +829,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -918,7 +918,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -1007,7 +1007,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]" -ForegroundColor Green
@@ -1095,7 +1095,7 @@ function Invoke-Menu()
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
                   write-host "] " -NoNewline
-                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green
+                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green -NoNewline
                   write-host "[" -NoNewline
                   write-host "installed" -ForegroundColor Green -NoNewline
                   write-host "]" -ForegroundColor Green
@@ -1141,7 +1141,7 @@ function Invoke-Menu()
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
                   write-host "] " -NoNewline
-                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green
+                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green -NoNewline
                   write-host "[" -NoNewline
                   write-host "installed" -ForegroundColor Green -NoNewline
                   write-host "]" -ForegroundColor Green
