@@ -240,7 +240,7 @@ PORT     STATE SERVICE VERSION
 |   Exploit results:
 |     Uri: http://192.168.1.71:80/cgi/loginDefaultUser
 |     Auth-Cookie: IDALToken=008b1047k72068r6100a69b0381d007p
-|     Credentials: admin : MyS3cr3t
+|     Credentials: inconspicuous : MyS3cr3t
 |       module Author: r00t-3xp10it
 |
 |   Referencies:
@@ -301,12 +301,6 @@ PORT      STATE    SERVICE
 
 "@;
 
-If($tcpinspector.IsPresent)
-{
-   (New-Object -ComObject WScript.Shell).Popup("TCPinspector-ps1 -portscan parameter [NMAP] requires`nvulners.nse, AXISwebcam-enum.nse, CVE-206-7633-enum.nse`ndlink-cve-2019-13101.nse and smtp-vuln-cve2020-28017.nse", 20, "Install non-oficial nse modules - $( Get-Date -Format 'yyyy/MM/dd HH:mm' )", 49)
-}
-
-
 ## Main Menu
 function Invoke-Menu() 
 {
@@ -326,7 +320,7 @@ function Invoke-Menu()
       Write-Host "  8       secret-finder            2026-o1-10  ***             ***"
       If(-not($tcpinspector.IsPresent))
       {
-         Write-Host "  manual  install one nse script" -ForegroundColor DarkGray
+         Write-Host "  manual  install one nse script   [<https://raw.git/..> OR <C:\Users\..>]" -ForegroundColor White -BackgroundColor DarkGray
       }
       Write-Host "  Q       exit script execution" -ForegroundColor Green
       Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
@@ -390,7 +384,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\vulners.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\vulners.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -476,7 +473,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -562,7 +562,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -648,7 +651,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -734,7 +740,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -820,7 +829,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -906,7 +918,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -992,7 +1007,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\secret-finder.nse installed" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   cmd /c 'pause'
                }
@@ -1035,7 +1053,7 @@ function Invoke-Menu()
                write-host "X" -ForegroundColor DarkRed -NoNewline
                write-host "] " -NoNewline
                write-host "Invalid option [empty], please try again .." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://raw>"
+               write-host "| help: this function accepts links <http(s)://raw.githubusercontent.com/..>"
                write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
@@ -1050,7 +1068,7 @@ function Invoke-Menu()
                   write-host "] " -NoNewline
                   write-host "Invalid option, wrong url format.." -ForegroundColor DarkRed
                   write-host "| help: this function only accepts [RAW] url links"
-                  write-host "|_      example: <https://raw/../../module.nse>`n"
+                  write-host "|_      example: <https://raw.githubusercontent.com/../module.nse>`n"
                   cmd /c 'pause'
                   Invoke-Menu
                }
@@ -1077,7 +1095,10 @@ function Invoke-Menu()
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
                   write-host "] " -NoNewline
-                  write-host "$NmapInstallPath\scripts\$nsename installed" -ForegroundColor Green
+                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green
+                  write-host "[" -NoNewline
+                  write-host "installed" -ForegroundColor Green -NoNewline
+                  write-host "]" -ForegroundColor Green
                }
                Else
                {
@@ -1097,7 +1118,7 @@ function Invoke-Menu()
                    write-host "X" -ForegroundColor DarkRed -NoNewline
                    write-host "] " -NoNewline
                    write-host "Invalid option, nse path not found.." -ForegroundColor DarkRed
-                   write-host "| help: this function accepts links <http(s)://raw/../module.nse>"
+                   write-host "| help: this function accepts links <http(s)://raw.githubusercontent.com/../module.nse>"
                    write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                    cmd /c 'pause'
                    Invoke-Menu
@@ -1120,7 +1141,10 @@ function Invoke-Menu()
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
                   write-host "] " -NoNewline
-                  write-host "$NmapInstallPath\scripts\$nsename installed" -ForegroundColor Green
+                  write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green
+                  write-host "[" -NoNewline
+                  write-host "installed" -ForegroundColor Green -NoNewline
+                  write-host "]" -ForegroundColor Green
                }
                Else
                {
@@ -1137,7 +1161,7 @@ function Invoke-Menu()
                write-host "X" -ForegroundColor DarkRed -NoNewline
                write-host "] " -NoNewline
                write-host "Invalid option, please try again.." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://raw/../module.nse>"
+               write-host "| help: this function accepts links <http(s)://raw.githuvusercontent.com/../module.nse>"
                write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
@@ -1145,7 +1169,6 @@ function Invoke-Menu()
          }
          Q
          {
-            Start-Sleep -Milliseconds 800
             Exit
          }   
          default
