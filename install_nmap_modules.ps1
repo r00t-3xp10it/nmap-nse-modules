@@ -69,6 +69,7 @@ If(-not(Test-Path -Path "$NmapInstallPath"))
    }
 }
 
+
 ## Modules description
 $VulnsBanner = @"
 
@@ -300,10 +301,15 @@ PORT      STATE    SERVICE
 
 "@;
 
+If($tcpinspector.IsPresent)
+{
+   (New-Object -ComObject WScript.Shell).Popup("TCPinspector-ps1 -portscan parameter [NMAP] requires`nvulners.nse, AXISwebcam-enum.nse, CVE-206-7633-enum.nse`ndlink-cve-2019-13101.nse and smtp-vuln-cve2020-28017.nse", 20, "Install non-oficial nse modules - $( Get-Date -Format 'yyyy/MM/dd HH:mm' )", 49)
+}
+
 
 ## Main Menu
 function Invoke-Menu() 
-{      
+{
    Do
    {
       Clear-Host
@@ -1029,7 +1035,7 @@ function Invoke-Menu()
                write-host "X" -ForegroundColor DarkRed -NoNewline
                write-host "] " -NoNewline
                write-host "Invalid option [empty], please try again .." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://>"
+               write-host "| help: this function accepts links <http(s)://raw>"
                write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
@@ -1044,7 +1050,7 @@ function Invoke-Menu()
                   write-host "] " -NoNewline
                   write-host "Invalid option, wrong url format.." -ForegroundColor DarkRed
                   write-host "| help: this function only accepts [RAW] url links"
-                  write-host "|_      example: <https://RAW/../../module.nse>`n"
+                  write-host "|_      example: <https://raw/../../module.nse>`n"
                   cmd /c 'pause'
                   Invoke-Menu
                }
@@ -1082,7 +1088,7 @@ function Invoke-Menu()
                cmd /c 'pause'
                Invoke-Menu
             }
-            ElseIf($ManualInstallNse -imatch '^(.nse)$')
+            ElseIf($ManualInstallNse -imatch '(.nse)$')
             {
                $nsename = ($ManualInstallNse).Split('\\')[-1]
                If(-not(Test-Path -Path "$ManualInstallNse" -PathType Leaf))
@@ -1090,9 +1096,11 @@ function Invoke-Menu()
                    write-host "[" -NoNewline
                    write-host "X" -ForegroundColor DarkRed -NoNewline
                    write-host "] " -NoNewline
-                   write-host "Invalid option, nse not found.." -ForegroundColor DarkRed
+                   write-host "Invalid option, nse path not found.." -ForegroundColor DarkRed
+                   write-host "| help: this function accepts links <http(s)://raw/../module.nse>"
+                   write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                    cmd /c 'pause'
-                  Invoke-Menu
+                   Invoke-Menu
                }
 
                Write-Host "[" -NoNewline
@@ -1128,8 +1136,8 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "X" -ForegroundColor DarkRed -NoNewline
                write-host "] " -NoNewline
-               write-host "Invalid option, nse not found.." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://>"
+               write-host "Invalid option, please try again.." -ForegroundColor DarkRed
+               write-host "| help: this function accepts links <http(s)://raw/../module.nse>"
                write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
