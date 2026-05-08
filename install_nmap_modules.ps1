@@ -22,7 +22,8 @@
 
 
 [CmdletBinding(PositionalBinding=$false)] param(
-   [string]$NmapInstallPath="C:\Program Files (x86)\Nmap"
+   [string]$NmapInstallPath="C:\Program Files (x86)\Nmap",
+   [switch]$tcpinspector
 )
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -33,7 +34,7 @@ $FirtBanner = @"
    __ \    __|   _ \
    |   | \__ \   __/
   _|  _| ____/ \___| [Nmap Scripting Engine]
-  install unreleased nse modules into nmap-db
+  install\update nmap non-official nse scripts
 
 "@;
 
@@ -317,8 +318,11 @@ function Invoke-Menu()
       Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
       Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
       Write-Host "  8       secret-finder            2026-o1-10  ***             ***"
-      Write-Host "  manual  install one nse script" -ForegroundColor DarkCyan
-      Write-Host "  Q       Quit this script [exit]" -ForegroundColor Green
+      If(-not($tcpinspector.IsPresent))
+      {
+         Write-Host "  manual  install one nse script" -ForegroundColor DarkGray
+      }
+      Write-Host "  Q       exit script execution" -ForegroundColor Green
       Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
       $Choise = Read-Host
  
@@ -339,7 +343,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -390,6 +394,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\vulners.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          2 
@@ -407,7 +429,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -458,6 +480,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          3 
@@ -475,7 +515,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -526,6 +566,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          4
@@ -543,7 +601,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -594,6 +652,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function    
          }
          5
@@ -611,7 +687,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -662,6 +738,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          6
@@ -679,7 +773,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -730,6 +824,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          7
@@ -747,7 +859,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -798,6 +910,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          8
@@ -815,7 +945,7 @@ function Invoke-Menu()
                write-host "[" -NoNewline
                write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
                write-host "] " -NoNewline
-               write-host "nmap database with this module? (yes|no): " -NoNewline -ForegroundColor Blue
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
             Else
             {
@@ -866,6 +996,24 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\secret-finder.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\secret-finder.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
             ## end of function
          }
          manual
@@ -889,6 +1037,18 @@ function Invoke-Menu()
 
             If($ManualInstallNse -match '^(htt(p|ps)://)')
             {
+               If($ManualInstallNse -NotMatch '^(htt(p|ps)://raw)')
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "Invalid option, wrong url format.." -ForegroundColor DarkRed
+                  write-host "| help: this function only accepts [RAW] url links"
+                  write-host "|_      example: <https://RAW/../../module.nse>`n"
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
                $nsename = ($ManualInstallNse).Split('/')[-1]
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
@@ -904,7 +1064,9 @@ function Invoke-Menu()
                   Write-Host "[" -NoNewline
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with $nsename"
+
                   nmap.exe --script-updatedb
+                  nmap.exe --script-help $nsename
 
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
@@ -943,7 +1105,9 @@ function Invoke-Menu()
                   Write-Host "[" -NoNewline
                   Write-Host "2" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with $nsename"
+
                   nmap.exe --script-updatedb
+                  nmap.exe --script-help $nsename
 
                   write-host "`n[" -NoNewline
                   write-host "*" -ForegroundColor Green -NoNewline
@@ -971,7 +1135,7 @@ function Invoke-Menu()
                Invoke-Menu
             }
          }
-         Q 
+         Q
          {
             Start-Sleep -Milliseconds 800
             Exit
