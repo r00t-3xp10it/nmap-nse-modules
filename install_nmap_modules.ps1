@@ -1049,12 +1049,9 @@ function Invoke-Menu()
             ## check user inputs
             If([string]::IsNullOrEmpty($ManualInstallNse))
             {
-               write-host "[" -NoNewline
-               write-host "X" -ForegroundColor DarkRed -NoNewline
-               write-host "] " -NoNewline
-               write-host "Invalid option [empty], please try again .." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://raw.githubusercontent.com/..>"
-               write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
+               write-host "| Invalid option [empty], please try again .." -ForegroundColor DarkRed
+               write-host "|   help: this function accepts links <http(s)://raw.githubusercontent.com/..>"
+               write-host "|_        or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
             }
@@ -1063,12 +1060,9 @@ function Invoke-Menu()
             {
                If($ManualInstallNse -NotMatch '^(htt(p|ps)://raw)')
                {
-                  write-host "[" -NoNewline
-                  write-host "X" -ForegroundColor DarkRed -NoNewline
-                  write-host "] " -NoNewline
-                  write-host "Invalid option, wrong url format.." -ForegroundColor DarkRed
-                  write-host "| help: this function only accepts [RAW] url links"
-                  write-host "|_      example: <https://raw.githubusercontent.com/../module.nse>`n"
+                  write-host "| Invalid option, wrong url format.." -ForegroundColor DarkRed
+                  write-host "|   help: this function only accepts [RAW] url links"
+                  write-host "|_  example: <https://raw.githubusercontent.com/../module.nse>`n"
                   cmd /c 'pause'
                   Invoke-Menu
                }
@@ -1114,12 +1108,9 @@ function Invoke-Menu()
                $nsename = ($ManualInstallNse).Split('\\')[-1]
                If(-not(Test-Path -Path "$ManualInstallNse" -PathType Leaf))
                {
-                   write-host "[" -NoNewline
-                   write-host "X" -ForegroundColor DarkRed -NoNewline
-                   write-host "] " -NoNewline
-                   write-host "Invalid option, nse path not found.." -ForegroundColor DarkRed
-                   write-host "| help: this function accepts links <http(s)://raw.githubusercontent.com/../module.nse>"
-                   write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
+                   write-host "| Invalid option, nse path not found.." -ForegroundColor DarkRed
+                   write-host "|   help: this function accepts links <http(s)://raw.githubusercontent.com/../module.nse>"
+                   write-host "|_        or absoluct paths <C:\users\desktop\module.nse>`n"
                    cmd /c 'pause'
                    Invoke-Menu
                }
@@ -1157,12 +1148,9 @@ function Invoke-Menu()
             }
             Else
             {
-               write-host "[" -NoNewline
-               write-host "X" -ForegroundColor DarkRed -NoNewline
-               write-host "] " -NoNewline
-               write-host "Invalid option, please try again.." -ForegroundColor DarkRed
-               write-host "| help: this function accepts links <http(s)://raw.githuvusercontent.com/../module.nse>"
-               write-host "|_       or absoluct paths <C:\users\desktop\module.nse>`n"
+               write-host "| Invalid option, please try again.." -ForegroundColor DarkRed
+               write-host "|   help: this function accepts links <http(s)://raw.githuvusercontent.com/../module.nse>"
+               write-host "|_        or absoluct paths <C:\users\desktop\module.nse>`n"
                cmd /c 'pause'
                Invoke-Menu
             }
