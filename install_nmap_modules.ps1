@@ -9,6 +9,7 @@
    [nse list]
    vulners.nse
    abb-cve-2019-7226
+   CVE-2025-11833.nse
    AXISwebcam-enum.nse
    CVE-2026-7633-enum.nse
    dlink-cve-2019-13101.nse
@@ -240,7 +241,7 @@ PORT     STATE SERVICE VERSION
 |   Exploit results:
 |     Uri: http://192.168.1.71:80/cgi/loginDefaultUser
 |     Auth-Cookie: IDALToken=008b1047k72068r6100a69b0381d007p
-|     Credentials: inconspicuous : MyS3cr3t
+|     Credentials: inconspicuous => MyS3cr3t
 |       module Author: r00t-3xp10it
 |
 |   Referencies:
@@ -301,6 +302,85 @@ PORT      STATE    SERVICE
 
 "@;
 
+$install11833 = @"
+
+CVE-2025-11833:
+The Post SMTP - Complete SMTP Solution with Logs, Alerts, Backup SMTP & Mobile App plugin
+for WordPress is vulnerable to unauthorized access of data due to a missing capability check
+on the __construct function in all versions up to and including, 3.6.0 This makes it possible
+for unauthenticated attackers to read arbitrary logged emails sent through the Post SMTP plugin,
+including password reset emails containing password reset links which can lead to account takeover
+
+Remarks: --script-args exploit="true" argument attempts to exploit the password reset vulnerability
+by sending a http.post() request with a link to reset password. revealing that the system is 100%
+vulnerable to CVE-2025-11833 vulnerability if successefuly executed (response.status == [200] OK)
+
+Some web developers have moved /wp-login.php landing webpage further ahead in the website directory
+structure like: 'http://host:port/website/plugins/wp-login.php' in that case we can invoke CVE-2025-1183.nse:
+--script-args uri="/website/plugins/wp-login.php" (described steps required if: --script-args exploit="true")
+
+Output
+PORT   STATE SERVICE   VERSION
+25/tcp open  post smtp 3.6.0
+CVE-2025-11833-enum:
+|  TITLE: post-smtp
+|  STATE: VULNERABLE
+|   ID: CVE:CVE-2025-11833
+|   Risk factor: 9.8 (CRITICAL) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
+|     unauthenticated attackers can access logged emails in Post SMTP plugin including
+|     password reset links, enabling full WordPress account takeover without authentication.
+|
+|  Disclosure date: 2025-11-01
+|  Exploit results:
+|   smtpd version: post smtp 3.6.0 vulnerable version [found]
+|   _post request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
+|   _response: POST request successfully accepted [200] OK
+|     module author: r00t-3xp10it
+|
+| Referencies:
+|   https://www.sentinelone.com/vulnerability-database/cve-2025-11833
+|_
+
+"@;
+
+$installsmtpvuln = @"
+
+smtp-vuln-cve2020-28017:
+Exim remote code execution via CVE-2020-28017 through CVE-2020-28026 also known as 21Nails
+
+We check for the presence of the vulnerability via:
+  - Connecting to port 25
+  - Receiving the banner
+  - Checking the version
+  - Returning the state
+
+This check may have False Positives if:
+  - Patches are back ported but the version number is not updated
+
+This check may have False Negatives if:
+  - the Exim server is configured to remove Exim and/or the version number
+
+Output
+PORT   STATE SERVICE
+25/tcp open  smtp
+smtp-vuln-cve2020-28017:
+|  TITLE: Exim remote code execution via CVE-2020-28017 through CVE-2020-28026 also known as 21Nails
+|  STATE: VULNERABLE
+|   ID: CVE:CVE-2020-28017
+|   Risk factor: 10.0 (HIGH) (AV:N/AC:L/Au:N/C:C/I:C/A:C)
+|     In May 2021 21 vulnerabilities were disclosed in the Exim mailserver. Of these 10 were remote
+|     vulnerabilities that could yield among other things remote code execution and memory contents
+|     revelation remotely. For a significant majority of the vulnerabilities they have been present
+|     since at least 2004 in the code base.
+|
+|  Disclosure date: 2021-05-04
+|
+| Referencies:
+|   https://www.qualys.com/2021/05/04/21nails/21nails.txt
+|_
+
+"@;
+
 ## Main Menu
 function Invoke-Menu() 
 {
@@ -317,7 +397,8 @@ function Invoke-Menu()
       Write-Host "  5       smtp-vuln-cve2020-28017  2020-04-13  CVE-2020-28017  CRITICAL 9.8"
       Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
       Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
-      Write-Host "  8       secret-finder            2026-o1-10  ***             ***"
+      Write-Host "  8       CVE-2025-11833.nse       2025-11-01  CVE-2025-11833  CRITICAL 9.8"
+      Write-Host "  9       secret-finder            2026-o1-10  ***             ***"
       If(-not($tcpinspector.IsPresent))
       {
          Write-Host "  manual  install one nse script   [<https://raw.git/..> OR <C:\Users\..>]" -ForegroundColor White -BackgroundColor DarkGray
@@ -693,7 +774,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
             }
 
-            write-host $DlinkBanner
+            write-host $installsmtpvuln
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
@@ -953,6 +1034,99 @@ function Invoke-Menu()
          }
          8
          {
+
+            ## under-develop
+            powershell (New-Object -ComObjEct Wscript.Shell).Popup("WARNING: NSE SCRIPT UNDER DEVELOP [DEBUG PROCESS]",5,"CVE-2025-11833",0+16)|Out-Null
+
+            ## install CVE-2025-11833
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $install11833
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $Instal11833 = Read-Host
+            If($Instal11833 -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: CVE-2025-11833.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving CVE-2025-11833.nse to $NmapInstallPath\scripts\CVE-2025-11833.nse"
+               Move-Item -Path "$Env:TMP\CVE-2025-11833.nse" -Destination "$NmapInstallPath\scripts\CVE-2025-11833.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with CVE-2025-11833.nse"
+                  nmap.exe --script-updatedb
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse updated" -ForegroundColor Green
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving CVE-2025-11833.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ElseIf($Instal11833 -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
+            ## end of function    
+         }
+         9
+         {
             ## install secret-finder
             $UpDateNse = "false"
             If(Test-path -path "$NmapInstallPath\scripts\secret-finder.nse" -PathType Leaf)
@@ -1117,8 +1291,8 @@ function Invoke-Menu()
 
                Write-Host "[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
-               Write-Host "] moving $nsename to $NmapInstallPath\scripts\$nsename"
-               Move-Item -Path "$ManualInstallNse" -Destination "$NmapInstallPath\scripts\$nsename" -Force
+               Write-Host "] Copy $nsename to $NmapInstallPath\scripts\$nsename"
+               Copy-Item -Path "$ManualInstallNse" -Destination "$NmapInstallPath\scripts\$nsename" -Force
 
                If(Test-path -path "$NmapInstallPath\scripts\$nsename" -PathType Leaf)
                {
