@@ -332,7 +332,7 @@ CVE-2025-11833-enum:
 |
 |  Disclosure date: 2025-11-01
 |  Exploit results:
-|   smtpd version: post smtp 3.6.0 vulnerable version [found]
+|   smtp detection: post smtp 3.6.0 [vulnerable version]
 |   _post request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
 |   _response: POST request successfully accepted [200] OK
 |     module author: r00t-3xp10it
@@ -1034,10 +1034,6 @@ function Invoke-Menu()
          }
          8
          {
-
-            ## under-develop
-            powershell (New-Object -ComObjEct Wscript.Shell).Popup("WARNING: NSE SCRIPT UNDER DEVELOP [DEBUG PROCESS]",5,"CVE-2025-11833",0+16)|Out-Null
-
             ## install CVE-2025-11833
             $UpDateNse = "false"
             If(Test-path -path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -PathType Leaf)
@@ -1067,7 +1063,7 @@ function Invoke-Menu()
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
                Write-Host "] downloading: CVE-2025-11833.nse"
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
                Write-Host "[" -NoNewline
                Write-Host "2" -NoNewline -ForegroundColor Green
                Write-Host "] moving CVE-2025-11833.nse to $NmapInstallPath\scripts\CVE-2025-11833.nse"
@@ -1266,7 +1262,7 @@ function Invoke-Menu()
                   write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green -NoNewline
                   write-host "[" -NoNewline
                   write-host "installed" -ForegroundColor Green -NoNewline
-                  write-host "]" -ForegroundColor Green
+                  write-host "]"
                }
                Else
                {
@@ -1309,7 +1305,7 @@ function Invoke-Menu()
                   write-host "$NmapInstallPath\scripts\$nsename " -ForegroundColor Green -NoNewline
                   write-host "[" -NoNewline
                   write-host "installed" -ForegroundColor Green -NoNewline
-                  write-host "]" -ForegroundColor Green
+                  write-host "]"
                }
                Else
                {
