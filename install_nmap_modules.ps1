@@ -452,13 +452,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with vulners.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help vulners.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\vulners.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\vulners.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -541,13 +545,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with AXISwebcam-enum.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help AXISwebcam-enum.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -630,13 +638,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with CVE-2026-7633-enum.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help CVE-2026-7633-enum.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -719,13 +731,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with dlink-cve-2019-13101.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help dlink-cve-2019-13101.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -808,13 +824,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with smtp-vuln-cve2020-28017-through-28026-21nails.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help smtp-vuln-cve2020-28017-through-28026-21nails.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -897,13 +917,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with abb-cve-2019-7226.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help abb-cve-2019-7226.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -986,13 +1010,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with http-livestreet-brute.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help http-livestreet-brute.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -1075,13 +1103,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with CVE-2025-11833.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help CVE-2025-11833.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
@@ -1112,12 +1144,6 @@ function Invoke-Menu()
                   cmd /c 'pause'
                   Invoke-Menu
                }
-
-               ## delete script
-               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -Force
-               ## update database
-               nmap.exe --script-updatedb
-               Start-Sleep -Seconds 2
             }
             ## end of function    
          }
@@ -1164,13 +1190,17 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with secret-finder.nse"
                   nmap.exe --script-updatedb
+                  nmap --script-help secret-finder.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\secret-finder.nse updated" -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]" -ForegroundColor Green
                   }
                   Else
                   {
