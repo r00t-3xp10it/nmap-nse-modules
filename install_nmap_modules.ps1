@@ -1260,6 +1260,14 @@ function Invoke-Menu()
                Invoke-Menu
             }
 
+            If($ManualInstallNse -iNotMatch '(.nse)$')
+            {
+               write-host "| Invalid option [not .nse], please try again .." -ForegroundColor DarkRed
+               write-host "|_  help: script to import to database must be in [.NSE] format"
+               cmd /c 'pause'
+               Invoke-Menu            
+            }
+
             If($ManualInstallNse -match '^(htt(p|ps)://)')
             {
                If($ManualInstallNse -NotMatch '^(htt(p|ps)://raw)')
