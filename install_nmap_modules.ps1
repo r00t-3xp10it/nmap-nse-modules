@@ -8,10 +8,11 @@
    
    [nse list]
    vulners.nse
-   abb-cve-2019-7226
    CVE-2025-11833.nse
    AXISwebcam-enum.nse
+   abb-cve-2019-7226.nse
    CVE-2026-7633-enum.nse
+   CVE-2026-27651-nginx.nse
    dlink-cve-2019-13101.nse
    http-livestreet-brute.nse
    smtp-vuln-cve2020-28017-through-28026-21nails.nse
@@ -394,6 +395,45 @@ smtp-vuln-cve2020-28017:
 
 "@;
 
+$CVE2026_nginx = @"
+
+CVE-2026-27651 is a Null Pointer Dereference vulnerability affecting the ngx_mail_auth_http_module
+module in NGINX Plus and NGINX Open Source. When this module is enabled and specific authentication
+configurations are active, specially crafted undisclosed requests can cause NGINX worker processes
+to terminate unexpectedly (This vulnerability creates a denial of service condition)
+
+how detection works
+CVE-2026-27651-nginx.nse detects HTTP authentication servers for the NGINX Mail Proxy's ngx_mail_auth_http
+by sending one http.get() request with the proprietary HTTP header that NGINX uses to validate email users
+by reading http.response.codes and comparing vulnerable version numbers with patched versions of database.
+
+Output
+CVE-2026-27651-nginx:
+| Title: NGINX Mail Authentication Vulnerability
+|  Status: VULNERABLE
+|    ID: CVE:CVE-2026-27651
+|    Risk factor: 8.7 (HIGH) (AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/V)
+|       CVE-2026-27651 is a Null Pointer Dereference vulnerability affecting the ngx_mail_auth_http_module
+|       module in NGINX Plus and NGINX Open Source. When this module is enabled and specific authentication
+|       configurations are active, specially crafted undisclosed requests can cause NGINX worker processes
+|       to terminate unexpectedly. This vulnerability creates a denial of service condition
+|
+|  Disclosure date: 2026-02-24
+|  Exploit results:
+|    nginx version: NGINX Plus R32 [vulnerable version]
+|    _nginx plugin: ngx_mail_auth_http_module [active]
+|      email_username: test_account@ssaredteam.com
+|      email_password: test_Passw0rd
+|        module Author: r00t-3xp10it
+|
+|  Referencies:
+|    https://nvd.nist.gov/vuln/detail/CVE-2026-27651
+|    https://www.sentinelone.com/vulnerability-database/cve-2026-27651
+|_
+
+"@;
+
+
 ## Main Menu
 function Invoke-Menu() 
 {
@@ -411,7 +451,8 @@ function Invoke-Menu()
       Write-host "  6       abb-cve-2019-7226        2019-02-04  CVE-2019-7226   HIGH 8.8"
       Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
       Write-Host "  8       CVE-2025-11833.nse       2025-11-01  CVE-2025-11833  CRITICAL 9.8"
-      Write-Host "  9       secret-finder            2026-o1-10  ***             ***"
+      Write-Host "  9       CVE-2026-27651-nginx     2026-02-24  CVE-2026-27651  HIGH 8.7"
+      Write-Host "  10      secret-finder            2026-01-10  ***             ***"
       If(-not($tcpinspector.IsPresent))
       {
          Write-Host "  manual  install one nse script   [<https://raw.git/..> OR <C:\Users\..>]" -ForegroundColor White -BackgroundColor DarkGray
@@ -1161,6 +1202,99 @@ function Invoke-Menu()
             ## end of function    
          }
          9
+         {
+            ## install CVE-2026-27651-nginx
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+            }
+
+            write-host $CVE2026_nginx
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstalSecret = Read-Host
+            If($InstalSecret -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: CVE-2026-27651-nginx.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-27651-nginx.nse" -OutFile "$Env:TMP\CVE-2026-27651-nginx.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving CVE-2026-27651-nginx.nse to $NmapInstallPath\scripts\CVE-2026-27651-nginx.nse"
+               Move-Item -Path "$Env:TMP\CVE-2026-27651-nginx.nse" -Destination "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with CVE-2026-27651-nginx.nse"
+                  nmap.exe --script-updatedb
+                  nmap --script-help CVE-2026-27651-nginx.nse
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving CVE-2026-27651-nginx.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -Force
+               ## update database
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
+            ## end of function
+         }
+         10
          {
             ## install secret-finder
             $UpDateNse = "false"
