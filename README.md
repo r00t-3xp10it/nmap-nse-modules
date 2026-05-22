@@ -1,14 +1,20 @@
-# nmap-nse-modules
-my collection of nmap nse modules
+<b><i><H1>my collection of nmap non-official nse scripts</H1></b></i>
 
-# Description
-    this working directory contains diferent nmap nse modules
-    writen by me to be of assistence in post-exploitation common tasks.
+<br />
 
-# Install
-    1) Download module from github
-    2) edit module to read the description
-    3) port module to nmap nse database
-    4) update nse database: `nmap --script-updatedb`
+### Install [windows]
 
-# Please read my 'WIKI' for further information.
+  [admin] copy to: `C:\Program Files (x86)\nmap\scripts\<script_name.nse>` <br />
+  [admin] Update NSE database: `nmap --script-updatedb`
+
+<br />
+
+### Install [linux]
+
+[admin] Copy to: `/usr/share/nmap/scripts/<script_name.nse>` <br />
+[admin] Update NSE database: `sudo nmap --script-updatedb`
+
+<br />
+
+### Script help
+Help: `nmap --script-help <script_name.nse>`
