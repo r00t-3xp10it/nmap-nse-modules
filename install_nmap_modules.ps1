@@ -416,7 +416,7 @@ CVE-2026-27651-nginx:
 |       CVE-2026-27651 is a Null Pointer Dereference vulnerability affecting the ngx_mail_auth_http_module
 |       module in NGINX Plus and NGINX Open Source. When this module is enabled and specific authentication
 |       configurations are active, specially crafted undisclosed requests can cause NGINX worker processes
-|       to terminate unexpectedly. This vulnerability creates a denial of service condition
+|       to terminate unexpectedly (This vulnerability creates a denial of service condition)
 |
 |  Disclosure date: 2026-02-24
 |  Exploit results:
