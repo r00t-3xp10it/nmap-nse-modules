@@ -337,8 +337,8 @@ Output
 PORT   STATE SERVICE   VERSION
 25/tcp open  post smtp 3.6.0
 CVE-2025-11833-enum:
-|  TITLE: post-smtp
-|  STATE: VULNERABLE
+|  Title: Post SMTP passwd reset link vulnerability
+|  State: VULNERABLE
 |   ID: CVE:CVE-2025-11833
 |   Risk factor: 9.8 (CRITICAL) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
 |     unauthenticated attackers can access logged emails in Post SMTP plugin including
@@ -406,6 +406,7 @@ how detection works
 CVE-2026-27651-nginx.nse detects HTTP authentication servers for the NGINX Mail Proxy's ngx_mail_auth_http
 by sending one http.get() request with the proprietary HTTP header that NGINX uses to validate email users
 by reading http.response.codes and comparing vulnerable version numbers with patched versions of database.
+Note: this script random sellects an user-agent to send in the http.post() request (IDS signature evasion)
 
 Output
 CVE-2026-27651-nginx:
