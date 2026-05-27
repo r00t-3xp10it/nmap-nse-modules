@@ -23,6 +23,11 @@ Help: `nmap --script-help <script_name.nse>`
 
 ### use `install_nmap_modules.ps1` to install\update\delete nse scripts
 `waening: execute install_nmap_modules.ps1 with administrator privileges`
+
+
+<img width="1479" height="613" alt="Sem título" src="https://github.com/user-attachments/assets/608c64f7-57ad-4ddf-a1f8-f05ee8a07cfe" />
+
+
 ```
 iwr -uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/install_nmap_modules.ps1" -outfile "install_nmap_modules.ps1"|Unblock-File;.\install_nmap_modules.ps1
 ```
