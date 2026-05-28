@@ -557,8 +557,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\vulners.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\vulners.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -650,8 +657,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\AXISwebcam-enum.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -743,8 +757,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\CVE-2026-7633-enum.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -836,8 +857,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\dlink-cve-2019-13101.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -929,8 +957,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\smtp-vuln-cve2020-28017-through-28026-21nails.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -1022,8 +1057,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\abb-cve-2019-7226.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -1115,8 +1157,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\http-livestreet-brute.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\http-livestreet-brute.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -1206,6 +1255,19 @@ function Invoke-Menu()
                   cmd /c 'pause'
                   Invoke-Menu
                }
+
+               ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\CVE-2025-11833.nse"
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -Force
+
+               ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
             }
             ## end of function    
          }
@@ -1295,8 +1357,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\CVE-2026-27651-nginx.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
@@ -1388,8 +1457,15 @@ function Invoke-Menu()
                }
 
                ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\secret-finder.nse"
                Remove-Item -Path "$NmapInstallPath\scripts\secret-finder.nse" -Force
+
                ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
                nmap.exe --script-updatedb
                Start-Sleep -Seconds 2
             }
