@@ -359,8 +359,9 @@ CVE-2025-11833:
 |    _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
 |      module author: r00t-3xp10it
 |
-| Referencies:
+| References:
 |   https://www.sentinelone.com/vulnerability-database/cve-2025-11833
+|   https://wpengine.com/support/how-do-i-reset-my-wp-admin-password
 |_
 
 "@;
