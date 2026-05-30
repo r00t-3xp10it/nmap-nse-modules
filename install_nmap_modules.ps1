@@ -417,6 +417,7 @@ CVE-2026-27651-nginx.nse detects HTTP authentication servers for the NGINX Mail 
 by sending one http.get() request with the proprietary HTTP header that NGINX uses to validate email users
 by reading http.response.codes and comparing vulnerable version numbers with patched versions of database.
 Note: this script random sellects an user-agent to send in the http.post() request (IDS signature evasion)
+Note: --script-args exploit="true" argument trys to exploit the denial-of-service condition in mail service
 
 Output
 CVE-2026-27651-nginx:
@@ -431,11 +432,13 @@ CVE-2026-27651-nginx:
 |
 |  Disclosure date: 2026-02-24
 |  Exploit results:
+|    target addres: 149.255.39.67
 |    nginx version: NGINX Plus R32 [vulnerable version]
-|    nginx payload: OUR PAYLOAD CORRUPTED THE BACKEND SERVER HEADER
+|    nginx payload: CORRUPTED THE BACKEND SERVER [Injection]
+|    [auth_server]: 6.fdrz-
 |    mail_username: testaccount@ssaredteam.com
 |    mail_password: testpassw0rd
-|      module Author: r00t-3xp10it
+|    module Author: r00t-3xp10it
 |
 |  Referencies:
 |    https://nvd.nist.gov/vuln/detail/CVE-2026-27651
