@@ -358,11 +358,11 @@ CVE-2025-11833:
 |    _post-request: /wp-login.php?action=lostpassword&page=postman_email_log&view=log&log_id=1&print=1
 |    _post-payload: user_login=admin&redirect_to=&wp-submit=Get+New+Password
 |    _response: PASSWORD RESET LINK FOUND IN RESPONSE [vulnerable]
-|      module author: r00t-3xp10it
+|  * module author: r00t-3xp10it
 |
-| References:
-|   https://www.sentinelone.com/vulnerability-database/cve-2025-11833
-|   https://wpengine.com/support/how-do-i-reset-my-wp-admin-password
+|  References:
+|    https://www.sentinelone.com/vulnerability-database/cve-2025-11833
+|    https://wpengine.com/support/how-do-i-reset-my-wp-admin-password
 |_
 
 "@;
@@ -438,7 +438,7 @@ CVE-2026-27651-nginx:
 |    [auth_server]: 6.fdrz-
 |    mail_username: testaccount@ssaredteam.com
 |    mail_password: testpassw0rd
-|    module Author: r00t-3xp10it
+|  * module Author: r00t-3xp10it
 |
 |  Referencies:
 |    https://nvd.nist.gov/vuln/detail/CVE-2026-27651
