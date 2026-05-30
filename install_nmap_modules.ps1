@@ -432,10 +432,10 @@ CVE-2026-27651-nginx:
 |  Disclosure date: 2026-02-24
 |  Exploit results:
 |    nginx version: NGINX Plus R32 [vulnerable version]
-|    _nginx plugin: ngx_mail_auth_http_module [active]
-|      email_username: test_account@ssaredteam.com
-|      email_password: test_Passw0rd
-|        module Author: r00t-3xp10it
+|    nginx payload: OUR PAYLOAD CORRUPTED THE BACKEND SERVER HEADER
+|    mail_username: testaccount@ssaredteam.com
+|    mail_password: testpassw0rd
+|      module Author: r00t-3xp10it
 |
 |  Referencies:
 |    https://nvd.nist.gov/vuln/detail/CVE-2026-27651
