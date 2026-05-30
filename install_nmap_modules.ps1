@@ -1327,7 +1327,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -ForegroundColor Green -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "updated" -ForegroundColor Green -NoNewline
                      write-host "]"
@@ -1337,7 +1337,7 @@ function Invoke-Menu()
                      write-host "`n[" -NoNewline
                      write-host "*" -ForegroundColor Green -NoNewline
                      write-host "] " -NoNewline
-                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -ForegroundColor Green -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse " -ForegroundColor Green -NoNewline
                      write-host "[" -NoNewline
                      write-host "installed" -ForegroundColor Green -NoNewline
                      write-host "]"
