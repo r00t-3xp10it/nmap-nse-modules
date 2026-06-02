@@ -423,6 +423,9 @@ Output
 Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-30 15:49 +0100
 NSE: trying to exploit the denial-of-service in: 149.255.39.67
 NSE: CloneDomain::AuthenticationDomain: postmaster@static.hvvc.us
+NSE: testing uri: [404] http://149.255.39.67:80/auth
+NSE: testing uri: [404] http://149.255.39.67:80/auth.php
+NSE: testing uri: [200] http://149.255.39.67:80/mail/auth.php [ found ]
 NSE: Nginx::Auth::Salt: <rngkaxae.1780348022@static.hvvc.us>
 Nmap scan report for 149-255-39-67.static.hvvc.us (149.255.39.67)
 Host is up (0.13s latency).
