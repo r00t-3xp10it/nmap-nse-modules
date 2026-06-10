@@ -490,7 +490,7 @@ PORT     STATE SERVICE
 |  Disclosure date: 2026-06-02
 |  Exploit results:
 |     host address: 149.255.39.67
-|     psql version: Postgres 0.8.3
+|     psql version:  PostgreSQL DB 13.19 - 13.22 or 14.7 - 14.9
 |     exploit info: SERVICE CRASHED AFTER PROCESSING REQUEST
 |  * module author: r00t-3xp10it
 |
@@ -1520,7 +1520,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
+               iwr -uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-45678-pgsql.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\CVE-2026-45678-pgsql.nse" -Force
@@ -1554,7 +1554,7 @@ function Invoke-Menu()
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
                Write-Host "] downloading: CVE-2026-45678-pgsql.nse"
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
                Write-Host "[" -NoNewline
                Write-Host "2" -NoNewline -ForegroundColor Green
                Write-Host "] moving CVE-2026-45678-pgsql.nse to $NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse"
