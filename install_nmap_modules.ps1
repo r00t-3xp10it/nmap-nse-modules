@@ -490,7 +490,7 @@ PORT     STATE SERVICE
 |  Disclosure date: 2026-06-02
 |  Exploit results:
 |     host address: 149.255.39.67
-|     psql version:  PostgreSQL DB 13.19 - 13.22 or 14.7 - 14.9
+|     psql version: PostgreSQL DB 13.19 - 13.22 or 14.7 - 14.9
 |     exploit info: SERVICE CRASHED AFTER PROCESSING REQUEST
 |  * module author: r00t-3xp10it
 |
