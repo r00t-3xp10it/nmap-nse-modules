@@ -14,6 +14,7 @@
    CVE-2026-7633-enum.nse
    CVE-2026-27651-nginx.nse
    dlink-cve-2019-13101.nse
+   CVE-2026-45678-pgsql.nse
    http-livestreet-brute.nse
    smtp-vuln-cve2020-28017-through-28026-21nails.nse
 
@@ -460,6 +461,46 @@ PORT   STATE SERVICE
 
 "@;
 
+$CVE_2026_pgsql = @"
+
+CVE-2026-45678-pgsql:
+OpenTelemetry eBPF Instrumentation provides eBPF instrumentation based on the OpenTelemetry
+standard. Prior to version 0.9.0, the Postgres protocol parser assumes BIND message payloads
+contain a valid NUL-terminated portal name. A crafted empty or unterminated payload can make
+OBI slice beyond the end of the captured buffer and panic (Denial Of Service Condition)
+
+how detection works
+CVE-2026-45678-pgsql.nse checks for vulnerable versions of Postgres (< 0.9.0) as an initial
+vulnerability test, and if the user invokes --script-args exploit=true, the script will compile
+the BIND package with a malformed header and sends the payload that causes a panic error in OBI
+
+Output
+PORT     STATE SERVICE
+5432/tcp open  Postgres
+| CVE-2026-45678-pgsql:
+|  Title: OpenTelemetry OBI Postgres Parser DoS
+|  State: VULNERABLE
+|    ID: CVE:CVE-2026-45678
+|    Risk factor: 7.8 (HIGH) (AV:N/AC:L/Au:N/C:N/I:N/A:C)
+|       OpenTelemetry eBPF Instrumentation provides eBPF instrumentation based on the OpenTelemetry
+|       standard. Prior to version 0.9.0, the Postgres protocol parser assumes BIND message payloads
+|       contain a valid NUL-terminated portal name. A crafted empty or unterminated payload can make
+|       OBI slice beyond the end of the captured buffer and panic (Denial Of Service Condition)
+|
+|  Disclosure date: 2026-06-02
+|  Exploit results:
+|     host address: 149.255.39.67
+|     psql version: Postgres 0.8.3
+|     exploit info: SERVICE CRASHED AFTER PROCESSING REQUEST
+|  * module author: r00t-3xp10it
+|
+|  References:
+|    https://www.tenable.com/cve/CVE-2026-45678
+|    https://github.com/advisories/GHSA-pgvv-q3wf-mm9m
+|_
+
+"@;
+
 
 ## Main Menu
 function Invoke-Menu() 
@@ -479,7 +520,8 @@ function Invoke-Menu()
       Write-Host "  7       http-livestreet-brute    2017-10-03  CVE-2017-5638   CRITICAL 9.8"
       Write-Host "  8       CVE-2025-11833.nse       2025-11-01  CVE-2025-11833  CRITICAL 9.8"
       Write-Host "  9       CVE-2026-27651-nginx     2026-02-24  CVE-2026-27651  HIGH 8.7"
-      Write-Host "  10      secret-finder            2026-01-10  ***             ***"
+      Write-Host "  10      CVE-2026-45678-pgsql     2026-06-02  CVE-2026-45678  HIGH 7.8"
+      Write-Host "  11      secret-finder            2026-01-10  ***             ***"
       If(-not($tcpinspector.IsPresent))
       {
          Write-Host "  manual  install one nse script   [<https://raw.git/..> OR <C:\Users\..>]" -ForegroundColor White -BackgroundColor DarkGray
@@ -497,6 +539,7 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\vulners.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
             }
 
             write-host $VulnsBanner
@@ -597,6 +640,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\AXISwebcam-enum.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\AXISwebcam-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\AXISwebcam-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $AXISWebCamBanner
@@ -697,6 +753,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2026-7633-enum.nse" -OutFile "$Env:TMP\CVE-2026-7633-enum.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\CVE-2026-7633-enum.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $TotoLinkBanner
@@ -797,6 +866,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\dlink-cve-2019-13101.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $DlinkBanner
@@ -997,6 +1079,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\abb-cve-2019-7226.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\abb-cve-2019-7226.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $ABBBanner
@@ -1197,6 +1292,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\CVE-2025-11833.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2025-11833.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2025-11833.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\CVE-2025-11833.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $install11833
@@ -1297,6 +1405,19 @@ function Invoke-Menu()
             If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse" -PathType Leaf)
             {
                $UpDateNse = "true"
+
+               ## check version install
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2026-27651-nginx.nse" -OutFile "$Env:TMP\CVE-2026-27651-nginx.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-27651-nginx.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\CVE-2026-27651-nginx.nse" -Force
+
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"Update available",0+64)|Out-Null
+               }
             }
 
             write-host $CVE2026_nginx
@@ -1391,6 +1512,118 @@ function Invoke-Menu()
             ## end of function
          }
          10
+         {
+            ## install CVE-2026-45678-pgsql
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+
+               ## check version install
+               iwr -uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-45678-pgsql.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\CVE-2026-45678-pgsql.nse" -Force
+
+               if($Install -lt $GitHub)
+               {
+
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"Update available",0+64)|Out-Null
+               }
+            }
+
+            write-host $CVE_2026_pgsql
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstalSecret = Read-Host
+            If($InstalSecret -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: CVE-2026-45678-pgsql.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/Under%20Develop/CVE-2026-45678-pgsql.nse" -OutFile "$Env:TMP\CVE-2026-45678-pgsql.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving CVE-2026-45678-pgsql.nse to $NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse"
+               Move-Item -Path "$Env:TMP\CVE-2026-45678-pgsql.nse" -Destination "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with CVE-2026-45678-pgsql.nse"
+                  nmap.exe --script-updatedb
+                  nmap --script-help CVE-2026-45678-pgsql.nse
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving CVE-2026-45678-pgsql.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse"
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2026-45678-pgsql.nse" -Force
+
+               ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
+            ## end of function
+         }
+         11
          {
             ## install secret-finder
             $UpDateNse = "false"
