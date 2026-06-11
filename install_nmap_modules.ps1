@@ -642,7 +642,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\AXISwebcam-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\AXISwebcam-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\AXISwebcam-enum.nse" -Force
@@ -651,7 +651,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -677,7 +677,7 @@ function Invoke-Menu()
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
                Write-Host "] downloading: AXISwebcam-enum.nse"
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/AXISwebcam-enum.nse" -OutFile "$Env:TMP\AXISwebcam-enum.nse"|Unblock-File
                Write-Host "[" -NoNewline
                Write-Host "2" -NoNewline -ForegroundColor Green
                Write-Host "] moving AXISwebcam-enum.nse to $NmapInstallPath\scripts\AXISwebcam-enum.nse"
@@ -755,7 +755,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2026-7633-enum.nse" -OutFile "$Env:TMP\CVE-2026-7633-enum.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-7633-enum.nse" -OutFile "$Env:TMP\CVE-2026-7633-enum.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\CVE-2026-7633-enum.nse" -Force
@@ -764,7 +764,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -868,7 +868,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-7633-enum.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\dlink-cve-2019-13101.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\dlink-cve-2019-13101.nse" -Force
@@ -877,7 +877,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -903,7 +903,7 @@ function Invoke-Menu()
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
                Write-Host "] downloading: dlink-cve-2019-13101.nse"
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/dlink-cve-2019-13101.nse" -OutFile "$Env:TMP\dlink-cve-2019-13101.nse"|Unblock-File
                Write-Host "[" -NoNewline
                Write-Host "2" -NoNewline -ForegroundColor Green
                Write-Host "] moving dlink-cve-2019-13101.nse to $NmapInstallPath\scripts\dlink-cve-2019-13101.nse"
@@ -1081,7 +1081,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\abb-cve-2019-7226.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\abb-cve-2019-7226.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\abb-cve-2019-7226.nse" -Force
@@ -1090,7 +1090,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1116,7 +1116,7 @@ function Invoke-Menu()
                Write-Host "`n[" -NoNewline
                Write-Host "1" -NoNewline -ForegroundColor Green
                Write-Host "] downloading: abb-cve-2019-7226.nse"
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/abb-cve-2019-7226.nse" -OutFile "$Env:TMP\abb-cve-2019-7226.nse"|Unblock-File
                Write-Host "[" -NoNewline
                Write-Host "2" -NoNewline -ForegroundColor Green
                Write-Host "] moving abb-cve-2019-7226.nse to $NmapInstallPath\scripts\abb-cve-2019-7226.nse"
@@ -1294,7 +1294,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2025-11833.nse" -OutFile "$Env:TMP\CVE-2025-11833.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\CVE-2025-11833.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2025-11833.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\CVE-2025-11833.nse" -Force
@@ -1303,7 +1303,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1407,7 +1407,7 @@ function Invoke-Menu()
                $UpDateNse = "true"
 
                ## check version install
-               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/hacking-material-books/refs/heads/master/nmap-NSE/CVE-2026-27651-nginx.nse" -OutFile "$Env:TMP\CVE-2026-27651-nginx.nse"|Unblock-File
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2026-27651-nginx.nse" -OutFile "$Env:TMP\CVE-2026-27651-nginx.nse"|Unblock-File
                $GitHub = (Get-Content -Path "$Env:TMP\CVE-2026-27651-nginx.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2026-27651-nginx.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
                Remove-Item -Path "$Env:TMP\CVE-2026-27651-nginx.nse" -Force
@@ -1416,7 +1416,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1528,7 +1528,7 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"Update available",0+64)|Out-Null
+                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
