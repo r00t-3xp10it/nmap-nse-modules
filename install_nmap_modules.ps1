@@ -470,9 +470,9 @@ contain a valid NUL-terminated portal name. A crafted empty or unterminated payl
 OBI slice beyond the end of the captured buffer and panic (Denial Of Service Condition)
 
 how detection works
-CVE-2026-45678-pgsql.nse checks for vulnerable versions of Postgres (< 0.9.0) as an initial
-vulnerability test, and if the user invokes --script-args exploit=true, the script will compile
-the BIND package with a malformed header and sends the payload that causes a panic error in OBI
+CVE-2026-45678-pgsql.nse checks for PostgreSQL database version to comfirm the service state, if
+any PostgreSQL database version is found and '--script-args exploit=true' is invoked then it compiles
+the BIND package with a malformed header and sends the payload that causes a panic error in OBI (DoS)
 
 Output
 PORT     STATE SERVICE
