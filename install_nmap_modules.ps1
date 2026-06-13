@@ -73,6 +73,14 @@ If(-not(Test-Path -Path "$NmapInstallPath"))
 }
 
 
+## function Invoke-BallonTip()
+$path = (Get-Process -id $pid).Path
+Add-Type -AssemblyName System.Windows.Forms
+$balmsg = New-Object System.Windows.Forms.NotifyIcon
+$balmsg.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($path)
+$balmsg.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Info
+
+
 ## Modules description
 $VulnsBanner = @"
 
@@ -651,7 +659,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "AXISwebcam-enum version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  # powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -764,7 +777,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "CVE-2026-7633-enum version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -877,7 +895,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "dlink-cve-2019-13101 version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1090,7 +1113,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "abb-cve-2019-7226 version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1303,7 +1331,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "CVE-2025-11833 version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1416,7 +1449,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "CVE-2026-27651-nginx version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
@@ -1528,7 +1566,12 @@ function Invoke-Menu()
                if($Install -lt $GitHub)
                {
 
-                  powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"UPDATE AVAILABLE",0+64)|Out-Null
+                  $balmsg.BalloonTipText = "CVE-2026-45678-pgsql version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"UPDATE AVAILABLE",0+64)|Out-Null
                }
             }
 
