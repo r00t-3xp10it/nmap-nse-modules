@@ -538,6 +538,7 @@ function Invoke-Menu()
       Write-Host "`nChose Option: " -NoNewline -ForegroundColor Blue
       $Choise = Read-Host
  
+      $BallonType = "false"
       switch ($Choise) 
       {
          1 
@@ -663,6 +664,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   # powershell (New-Object -ComObjEct Wscript.Shell).Popup("AXISwebcam-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -672,7 +674,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -781,6 +792,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-7633-enum version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -790,7 +802,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -899,6 +920,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("dlink-cve-2019-13101 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -908,7 +930,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -1117,6 +1148,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("abb-cve-2019-7226 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -1126,7 +1158,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -1335,6 +1376,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2025-11833 version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -1344,7 +1386,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -1453,6 +1504,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-27651-nginx version $GitHub available",7,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -1462,7 +1514,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
@@ -1570,6 +1631,7 @@ function Invoke-Menu()
                   $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
                   $balmsg.Visible = $true
                   $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
 
                   #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"UPDATE AVAILABLE",0+64)|Out-Null
                }
@@ -1579,7 +1641,16 @@ function Invoke-Menu()
             If($UpDateNse -match '^(true)$')
             {
                write-host "[" -NoNewline
-               write-host "UPDATE" -NoNewline -ForegroundColor DarkRed
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
                write-host "] " -NoNewline
                write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
             }
