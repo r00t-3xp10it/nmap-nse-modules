@@ -16,6 +16,7 @@
    dlink-cve-2019-13101.nse
    CVE-2026-45678-pgsql.nse
    http-livestreet-brute.nse
+   CVE-2024-10924-authbypass.nse
    smtp-vuln-cve2020-28017-through-28026-21nails.nse
 
 .NOTES
@@ -313,8 +314,9 @@ information leakage on web servers. [scan ports: 80 tcp, 443 tcp]
 PORT      STATE    SERVICE
 22/tcp    open     ssh
 80/tcp    open     http
-| secret-finder:  [INFO]  [200]  /
-|  [INFO]  [200]  /images
+| secret-finder:
+|  [INFO]      [200]  /
+|  [INFO]      [200]  /images
 |  [CRITICAL]  [403]  /.svn
 |  [CRITICAL]  [403]  /.svn/
 |  [CRITICAL]  [403]  /.htaccess
@@ -509,6 +511,57 @@ PORT     STATE SERVICE
 
 "@;
 
+$CVE_2024_authbypass = @"
+
+The Really Simple Security plugin for WordPress is vulnerable to authentication bypass in
+versions 9.0.0 to 9.1.1.1 This is due to improper user check error handling in the two-factor
+REST API with the 'check_login_and_get_user' function. This makes it possible for un-authenticated
+users to log in as any existing user on the site such as an administrator when the 2FA is enabled
+
+how detection works
+CVE-2024-10924-authbypass.nse search for wordpress authentication login page to confirm
+that the wordpress its running on target server, if so sends the http.post() request with
+a json payload that triggers the webserver to send the session authentication set-cookie
+
+Output
+Initiating NSE at 02:28
+NSE: detecting wordpress dashboard page
+NSE: testing uri: [404] https://149.255.39.67:443/wp-login.php
+NSE: testing uri: [404] https://149.255.39.67:443/wp/wp-login.php
+NSE: testing uri: [200] https://149.255.39.67:443/wordpress/wp-login.php [ found ]
+NSE: sending the tcp header packet with the json payload
+Completed NSE at 02:28, 18.44s elapsed
+Nmap scan report for cloudserver.home.ru (149.255.39.67)
+Host is up (0.067s latency)
+
+PORT    STATE SERVICE
+443/tcp open  https
+| CVE-2024-10924-authbypass:
+|  Title: WordPress Really Simple Security Auth Bypass
+|  State: VULNERABLE
+|    ID: CVE:CVE-2024-10924
+|    Risk factor: 9.8 (CRITICAL) (AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)
+|       The Really Simple Security plugins for WordPress are vulnerable to authentication bypass in
+|       versions 9.0.0 to 9.1.1.1 This is due to improper user check error handling in the two-factor
+|       REST API with the 'check_login_and_get_user' function. This makes it possible for un-authenticated
+|       users to log in as any existing user on the site such as an administrator when the 2FA is enabled
+|
+|  Disclosure date: 2024-11-14
+|  Exploit results:
+|    target addres: 149.255.39.67
+|    dashboard_uri: /wordpress/wp-login.php
+|    restAPI_route: /wordpress/?rest_route=/reallysimplessl/v1/two_fa/skip_onboarding
+|    userid_cookie: 8769c8a14b30c1157143bc88383c2678=user%7C1740000000%7Cxyz
+|  * module author: r00t-3xp10it
+|
+|  References:
+|    https://nvd.nist.gov/vuln/detail/cve-2024-10924
+|    https://jetpack.com/resources/wordpress-functions-php
+|    https://github.com/MaleeshaUdan/wordpress-CVE-2024-10924--exploit/tree/main
+|_
+
+"@;
+
 
 ## Main Menu
 function Invoke-Menu() 
@@ -529,7 +582,8 @@ function Invoke-Menu()
       Write-Host "  8       CVE-2025-11833.nse       2025-11-01  CVE-2025-11833  CRITICAL 9.8"
       Write-Host "  9       CVE-2026-27651-nginx     2026-02-24  CVE-2026-27651  HIGH 8.7"
       Write-Host "  10      CVE-2026-45678-pgsql     2026-06-02  CVE-2026-45678  HIGH 7.8"
-      Write-Host "  11      secret-finder            2026-01-10  ***             ***"
+      Write-Host "  11      CVE-2024-10924-auth      2024-11-14  CVE-2024-10924  CRITICAL 9.8"
+      Write-Host "  12      secret-finder            2026-01-10  ***             ***"
       If(-not($tcpinspector.IsPresent))
       {
          Write-Host "  manual  install one nse script   [<https://raw.git/..> OR <C:\Users\..>]" -ForegroundColor White -BackgroundColor DarkGray
@@ -1738,6 +1792,133 @@ function Invoke-Menu()
             ## end of function
          }
          11
+         {
+            ## install CVE-2024-10924-authbypass
+            $UpDateNse = "false"
+            If(Test-path -path "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse" -PathType Leaf)
+            {
+               $UpDateNse = "true"
+
+               ## check version install
+               iwr -uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2024-10924-authbypass.nse" -OutFile "$Env:TMP\CVE-2024-10924-authbypass.nse"|Unblock-File
+               $GitHub = (Get-Content -Path "$Env:TMP\CVE-2024-10924-authbypass.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               $Install = (Get-Content -Path "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse"|Select-String -pattern '^(local SCRIPT_VERSION =)') -replace '"','' -replace 'local SCRIPT_VERSION = ',''
+               Remove-Item -Path "$Env:TMP\CVE-2024-10924-authbypass.nse" -Force
+
+               if($Install -lt $GitHub)
+               {
+
+                  $balmsg.BalloonTipText = "CVE-2024-10924-authbypass version $GitHub"
+                  $balmsg.BalloonTipTitle = "UPDATE AVAILABLE"
+                  $balmsg.Visible = $true
+                  $balmsg.ShowBalloonTip(10000)
+                  $BallonType = "true"
+
+                  #powershell (New-Object -ComObjEct Wscript.Shell).Popup("CVE-2026-45678-pgsql version $GitHub available`nCVE-2026-45678-pgsql version installed: $Install",9,"UPDATE AVAILABLE",0+64)|Out-Null
+               }
+            }
+
+            write-host $CVE_2024_authbypass
+            If($UpDateNse -match '^(true)$')
+            {
+               write-host "[" -NoNewline
+
+               if($BallonType -match "true")
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor Green               
+               }
+               else
+               {
+                  write-host "UPDATE" -NoNewline -ForegroundColor DarkRed               
+               }
+
+               write-host "] " -NoNewline
+               write-host "nmap database with this module? (yes|no|delete): " -NoNewline -ForegroundColor Blue
+            }
+            Else
+            {
+               write-host "[" -NoNewline
+               write-host "INSTALL" -NoNewline -ForegroundColor Green
+               write-host "] " -NoNewline
+               write-host "this module into nmap database? (yes|no): " -NoNewline -ForegroundColor Blue
+            }
+
+            $InstalSecret = Read-Host
+            If($InstalSecret -imatch '^(y|yes)$')
+            {
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] downloading: CVE-2024-10924-authbypass.nse"
+               iwr -Uri "https://raw.githubusercontent.com/r00t-3xp10it/nmap-nse-modules/refs/heads/master/CVE-2024-10924-authbypass.nse" -OutFile "$Env:TMP\CVE-2024-10924-authbypass.nse"|Unblock-File
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] moving CVE-2024-10924-authbypass.nse to $NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse"
+               Move-Item -Path "$Env:TMP\CVE-2024-10924-authbypass.nse" -Destination "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse" -Force
+
+               If(Test-path -path "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse" -PathType Leaf)
+               {
+                  Write-Host "[" -NoNewline
+                  Write-Host "3" -NoNewline -ForegroundColor Green
+                  Write-Host "] updating nmap nse database with CVE-2024-10924-authbypass.nse"
+                  nmap.exe --script-updatedb
+                  nmap --script-help CVE-2026-45678-pgsql.nse
+
+                  If($UpDateNse -match '^(true)$')
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "updated" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  Else
+                  {
+                     write-host "`n[" -NoNewline
+                     write-host "*" -ForegroundColor Green -NoNewline
+                     write-host "] " -NoNewline
+                     write-host "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse " -ForegroundColor Green -NoNewline
+                     write-host "[" -NoNewline
+                     write-host "installed" -ForegroundColor Green -NoNewline
+                     write-host "]"
+                  }
+                  cmd /c 'pause'
+               }
+               Else
+               {
+                  Write-Host "[ERROR]: moving CVE-2024-10924-authbypass.nse to nmap scripts directory" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+               }
+            }
+            ElseIf($InstalSecret -imatch '^(delete)$')
+            {
+               If(-not(Test-path -path "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse" -PathType Leaf))
+               {
+                  write-host "[" -NoNewline
+                  write-host "X" -ForegroundColor DarkRed -NoNewline
+                  write-host "] " -NoNewline
+                  write-host "error, nse not installed in nmap database..`n" -ForegroundColor DarkRed
+                  cmd /c 'pause'
+                  Invoke-Menu
+               }
+
+               ## delete script
+               Write-Host "`n[" -NoNewline
+               Write-Host "1" -NoNewline -ForegroundColor Green
+               Write-Host "] delete: $NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse"
+               Remove-Item -Path "$NmapInstallPath\scripts\CVE-2024-10924-authbypass.nse" -Force
+
+               ## update database
+               Write-Host "[" -NoNewline
+               Write-Host "2" -NoNewline -ForegroundColor Green
+               Write-Host "] update nmap nse database .."
+               nmap.exe --script-updatedb
+               Start-Sleep -Seconds 2
+            }
+            ## end of function
+         }
+         12
          {
             ## install secret-finder
             $UpDateNse = "false"
