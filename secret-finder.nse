@@ -13,6 +13,7 @@ categories = { "discovery", "safe" }
 author = "William Steven"
 license = "Same as Nmap"
 
+local SCRIPT_VERSION = "1.0.1"
 portrule = shortport.http
 
 action = function(host, port)
@@ -25,19 +26,18 @@ action = function(host, port)
                 "/test",
                 "/robots.txt",
                 "/sitemap.xml",
-
                 "/.DS_Store",
-                "/.well-known",                                                                         "/crossdomain.xml",
+                "/.well-known",
+                "/crossdomain.xml",
                 "/clientaccesspolicy.xml",
-
                 "/cgi-bin",
                 "/cgi-bin/test.cgi",
                 "/cgi-bin/php.cgi",
                 "/cgi-bin/status",
                 "/cgi-bin/admin.cgi",
-                                                                                                        "/backup",
+                "/cgi-bin/cstecgi.cgi",
+                "/backup",
                 "/bkp/",
-
                 "/config",
                 "/admin/",
                 "/administrator/",
@@ -109,6 +109,11 @@ action = function(host, port)
                 "/private.key",
 
                 -- CMS / App configs
+                "/wp",
+                "/wp-json",
+                "/wp-admin",
+                "/wordpress",
+                "/wp-login.php",
                 "/wp-config.php",
                 "/wp-config.php.bak",
                 "/wp-config.php~",
@@ -117,6 +122,8 @@ action = function(host, port)
                 "/config.yml",
                 "/settings.php",
                 "/localsettings.php",
+                "/etc/passwd",
+                "/admin-ajax.php",
 
                 -- Database dumps / backups
                 "/backup.sql",
@@ -139,6 +146,8 @@ action = function(host, port)
                 "/debug.log",
 
                 -- Auth / protection files
+                "/auth",
+                "/auth.php",
                 "/.htaccess",
                 "/.htpasswd",
                 "/.htaccess.bak",
