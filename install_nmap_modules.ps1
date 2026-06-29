@@ -1861,7 +1861,7 @@ function Invoke-Menu()
                   Write-Host "3" -NoNewline -ForegroundColor Green
                   Write-Host "] updating nmap nse database with CVE-2024-10924-authbypass.nse"
                   nmap.exe --script-updatedb
-                  nmap --script-help CVE-2026-45678-pgsql.nse
+                  nmap --script-help CVE-2024-10924-authbypass.nse
 
                   If($UpDateNse -match '^(true)$')
                   {
